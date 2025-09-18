@@ -1,6 +1,7 @@
 interface Case {
   id: number
   title: string
+  description: string
   uuid: string
   case_number: string
   created_at: string

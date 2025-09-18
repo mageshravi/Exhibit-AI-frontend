@@ -17,5 +17,8 @@
     "activityBar.background": "#28166C",
     "titleBar.activeBackground": "#381F97",
     "titleBar.activeForeground": "#FAF9FE"
+  },
+  "[vue]": {
+    "editor.tabSize": 2
   }
 }
