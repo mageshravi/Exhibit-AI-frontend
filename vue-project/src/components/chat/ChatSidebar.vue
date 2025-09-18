@@ -1,5 +1,35 @@
 <script setup lang="ts">
 import NewChatButton from '@/components/chat/NewChatButton.vue'
+import { onMounted, reactive } from 'vue'
+import { useRoute } from 'vue-router'
+
+interface Case {
+  id: number
+  title: string
+  uuid: string
+  case: number
+  created_at: string
+  updated_at: string
+}
+
+const route = useRoute()
+
+const state = reactive<{ chats: Case[] }>({
+  chats: [],
+})
+
+onMounted(() => {
+  fetch(`/api/poc/cases/${route.params.caseUuid}/chat-threads/`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return response.json()
+    })
+    .then((data) => {
+      state.chats = data.results
+    })
+})
 </script>
 
 <template>
@@ -7,11 +37,15 @@ import NewChatButton from '@/components/chat/NewChatButton.vue'
     <NewChatButton />
     <h4 class="c-chat-sidebar__title">Chats</h4>
     <nav class="m-chats-list">
-      <a class="m-chats-list__link" href="#" aria-selected="true"
-        >When was the house plan shared?</a
-      >
-      <a class="m-chats-list__link" href="#"
-        >Give me the delivery milestones and payment milestones in chronological order</a
+      <router-link
+        v-for="chat in state.chats"
+        :key="chat.id"
+        :to="{
+          name: 'CaseChat',
+          params: { caseUuid: route.params.caseUuid, threadUuid: chat.uuid },
+        }"
+        class="m-chats-list__link"
+        >{{ chat.title }}</router-link
       >
     </nav>
   </aside>
@@ -37,7 +71,8 @@ import NewChatButton from '@/components/chat/NewChatButton.vue'
       background-color: var(--panel-bg);
     }
 
-    &[aria-selected='true'] {
+    &[aria-selected='true'],
+    &.router-link-exact-active {
       color: white;
       background-color: var(--theme-tint);
     }

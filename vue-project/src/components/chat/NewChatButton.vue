@@ -1,8 +1,19 @@
 <script setup lang="ts">
 import PencilIcon from '@/components/icons/IconPencil.vue'
+import router from '@/router'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+function goToNewChat() {
+  router.push({
+    name: 'NewChat',
+    params: { caseUuid: route.params.caseUuid },
+  })
+}
 </script>
 <template>
-  <div class="c-new-chat-btn">
+  <div class="c-new-chat-btn" @click="goToNewChat()">
     <PencilIcon />
     New Chat
   </div>

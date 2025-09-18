@@ -4,8 +4,18 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/chat',
-      name: 'chat',
+      path: '/case/:caseUuid/chat',
+      name: 'Chat',
+      component: () => import('../views/ChatView.vue'),
+    },
+    {
+      path: '/case/:caseUuid/chat/new',
+      name: 'NewChat',
+      component: () => import('../views/NewChatView.vue'),
+    },
+    {
+      path: '/case/:caseUuid/chat/:threadUuid',
+      name: 'CaseChat',
       component: () => import('../views/ChatView.vue'),
     },
   ],
