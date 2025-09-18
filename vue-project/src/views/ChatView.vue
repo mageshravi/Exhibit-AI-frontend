@@ -1,51 +1,43 @@
 <script setup lang="ts">
 import ChatSidebar from '@/components/chat/ChatSidebar.vue'
 import ChatThread from '@/components/chat/ChatThread.vue'
+import CaseHeader from '@/components/CaseHeader.vue'
+import { getCaseDetails } from '@/utils/case'
+import { computed, onMounted, reactive } from 'vue'
+import { useRoute } from 'vue-router'
+import type { Case } from '@/types/chat-types'
+
+interface ChatViewState {
+  case: Case | null
+}
+
+const state = reactive(<ChatViewState>{
+  case: null,
+})
+
+const caseTitle = computed(() => state.case?.title || 'Loading...')
+
+const route = useRoute()
+onMounted(() => {
+  getCaseDetails(route.params.caseUuid as string).then((caseData) => {
+    if (caseData === null) {
+      return
+    }
+
+    state.case = caseData
+  })
+})
 </script>
 
 <template>
   <div class="v-chat-page">
-    <header class="v-chat-page__header">
-      <nav class="m-breadcrumbs">
-        <span class="m-breadcrumbs__item">
-          <a class="m-breadcrumbs__link" href="#cases">Cases</a>
-        </span>
-      </nav>
-      <h1 class="v-chat-page__title">S Mahadevan vs K Gopalan</h1>
-      <nav class="m-tabs">
-        <a class="m-tabs__tab" href="#overview">Overview</a>
-        <a class="m-tabs__tab" href="#exhibits">Exhibits</a>
-        <a class="m-tabs__tab" href="#chats" aria-selected="true">Chats</a>
-      </nav>
-    </header>
+    <CaseHeader class="v-chat-page__header" :title="caseTitle" />
     <ChatSidebar class="v-chat-page__sidebar" />
     <ChatThread class="v-chat-page__thread" />
   </div>
 </template>
 
 <style lang="scss">
-.m-breadcrumbs {
-  display: flex;
-  flex-flow: row;
-
-  &__item {
-    color: var(--body-txt--secondary);
-
-    &::after {
-      margin-inline: 6px;
-      content: '>';
-    }
-  }
-
-  &__link {
-    color: var(--body-txt--secondary);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
 .v-chat-page {
   display: grid;
   min-width: 1200px;
@@ -57,11 +49,6 @@ import ChatThread from '@/components/chat/ChatThread.vue'
   &__header {
     padding-block: 32px 21px;
     grid-column: 3 / span 4;
-  }
-
-  &__title {
-    margin-block-start: 0;
-    margin-block-end: 13px;
   }
 
   &__sidebar {
