@@ -12,9 +12,17 @@ const props = defineProps<{
     </nav>
     <h1 class="c-case-header__title">{{ props.title }}</h1>
     <nav class="m-tabs">
-      <a class="m-tabs__tab" href="#overview">Overview</a>
+      <router-link
+        class="m-tabs__tab"
+        :to="{ name: 'CaseDetail', params: { caseUuid: $route.params.caseUuid } }"
+        >Overview</router-link
+      >
       <a class="m-tabs__tab" href="#exhibits">Exhibits</a>
-      <a class="m-tabs__tab" href="#chats" aria-selected="true">Chats</a>
+      <router-link
+        class="m-tabs__tab"
+        :to="{ name: 'NewChat', params: { caseUuid: $route.params.caseUuid } }"
+        >Chats</router-link
+      >
     </nav>
   </header>
 </template>
@@ -38,6 +46,16 @@ const props = defineProps<{
 
     &:hover {
       text-decoration: underline;
+    }
+  }
+}
+
+.m-tabs {
+  &__tab {
+    &[aria-selected='true'],
+    &.router-link-active {
+      color: white;
+      background-color: var(--theme-tint);
     }
   }
 }
