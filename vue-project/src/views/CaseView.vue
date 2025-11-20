@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CaseHeader from '@/components/CaseHeader.vue'
+import UploadFiles from '@/components/exhibits/UploadFiles.vue'
 import { getCaseDetails } from '@/utils/case'
 import type { Case } from '@/types/chat-types'
 import { reactive, computed, onMounted } from 'vue'
@@ -63,15 +64,7 @@ function toggleDescription() {
         {{ descBtnLabel }}
       </button>
     </div>
-    <div class="v-case-page__exhibits">
-      <h3>Documents / Exhibits</h3>
-      <div class="v-case-page__dropzone">
-        <div class="v-case-page__dropzone-help">
-          <img src="/CloudUploadOutline.png" alt="Upload icon" />
-          <p>Drag and drop files here to upload</p>
-        </div>
-      </div>
-    </div>
+    <UploadFiles class="v-case-page__exhibits" />
   </div>
 </template>
 
