@@ -17,7 +17,11 @@ const props = defineProps<{
         :to="{ name: 'CaseDetail', params: { caseUuid: $route.params.caseUuid } }"
         >Overview</router-link
       >
-      <a class="m-tabs__tab" href="#exhibits">Exhibits</a>
+      <router-link
+        class="m-tabs__tab"
+        :to="{ name: 'Exhibits', params: { caseUuid: $route.params.caseUuid } }"
+        >Exhibits</router-link
+      >
       <router-link
         class="m-tabs__tab"
         :to="{ name: 'NewChat', params: { caseUuid: $route.params.caseUuid } }"
