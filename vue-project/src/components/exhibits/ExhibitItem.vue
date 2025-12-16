@@ -35,6 +35,7 @@ const fileIconClass = computed(() => {
       <a class="c-exhibit-item__action" :href="props.file" download></a>
       <span class="c-exhibit-item__action c-exhibit-item__action--info"></span>
       <span class="c-exhibit-item__action c-exhibit-item__action--edit"></span>
+      <span class="c-exhibit-item__action c-exhibit-item__action--delete"></span>
     </div>
   </div>
 </template>
@@ -77,9 +78,10 @@ const fileIconClass = computed(() => {
   &__file-actions {
     visibility: hidden;
     display: flex;
-    gap: 40px;
+    gap: 20px;
     margin-left: auto;
-    padding-inline: 40px;
+    padding-inline: 20px;
+    justify-self: flex-end;
   }
 
   &:hover &__file-actions {
@@ -105,7 +107,7 @@ const fileIconClass = computed(() => {
       width: var(--icon-size);
       height: var(--icon-size);
       background-image: url('/sprite-exhibit-item-icons.svg');
-      background-size: calc(var(--icon-size) * 3) var(--icon-size);
+      background-size: calc(var(--icon-size) * 4) var(--icon-size);
       background-repeat: no-repeat;
       background-position: left center;
       flex-shrink: 0;
@@ -118,6 +120,10 @@ const fileIconClass = computed(() => {
 
     &--edit::after {
       background-position-x: calc(-2 * var(--icon-size));
+    }
+
+    &--delete::after {
+      background-position-x: calc(-3 * var(--icon-size));
     }
   }
 }
