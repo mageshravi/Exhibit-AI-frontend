@@ -17,17 +17,7 @@
       </div>
     </div>
     <div class="c-upload-file__queue-wrapper u-dialog-box-shadow" v-if="state.queuedFiles">
-      <h3>Uploading files... Please wait...</h3>
-      <div class="c-upload-file__queue-item" v-for="(file, idx) in state.queuedFiles" :key="idx">
-        <span class="c-upload-file__queue-item-name">{{ file.file.name }}</span>
-        <div class="c-upload-file__queue-track">
-          <div
-            class="c-upload-file__queue-progress"
-            :class="{ 'is-complete': file.isProcessed }"
-            :style="progressStyle(file.progress)"
-          ></div>
-        </div>
-      </div>
+      <UploadProgress v-for="(file, idx) in state.queuedFiles" :key="idx" v-bind="file" />
     </div>
   </div>
 </template>
@@ -36,6 +26,8 @@
 import { reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { uploadFileWithProgress } from '@/utils/common'
+import axios from 'axios'
+import UploadProgress from './UploadProgress.vue'
 
 const route = useRoute()
 
@@ -50,11 +42,13 @@ class QueuedFile {
   file: File
   progress: number
   isProcessed: boolean
+  errors: Array<string>
 
   constructor(file: File) {
     this.file = file
     this.progress = 0
     this.isProcessed = false
+    this.errors = []
   }
 }
 interface UploadFilesState {
@@ -122,10 +116,6 @@ const handleFileDrop = function (ev: DragEvent) {
   }
 }
 
-const progressStyle = function (progress: number): string {
-  return `--data-progress: ${progress}%`
-}
-
 watch(
   () => state.queuedFiles,
   () => {
@@ -159,11 +149,30 @@ const uploadFile = function (queuedFile: QueuedFile) {
   formData.append('file', queuedFile.file)
   uploadFileWithProgress(`/api/poc/cases/${caseUuid}/exhibits/`, formData, function (progress) {
     queuedFile.progress = progress
-
-    if (progress == 100) {
-      queuedFile.isProcessed = true
-    }
   })
+    .then(() => {
+      queuedFile.progress = 100
+      console.log('File upload completed.')
+    })
+    .catch((error) => {
+      queuedFile.progress = 0
+
+      if (axios.isAxiosError(error)) {
+        for (const file_err of error.response?.data['file']) {
+          const pattern = new RegExp('^File type .*? is not allowed', 'i')
+          if (pattern.test(file_err)) {
+            queuedFile.errors.push('File type is not allowed.')
+          } else {
+            queuedFile.errors.push(file_err)
+          }
+        }
+      } else {
+        queuedFile.errors.push(`File upload failed: ${error}`)
+      }
+    })
+    .finally(() => {
+      queuedFile.isProcessed = true
+    })
 }
 </script>
 
@@ -214,27 +223,9 @@ const uploadFile = function (queuedFile: QueuedFile) {
     position: fixed;
     bottom: 40px;
     right: 40px;
-    padding: 13px 32px 30px 32px;
+    padding: 30px 32px;
     background-color: var(--panel-bg);
     border-radius: 1rem;
-  }
-
-  &__queue-track {
-    border: 1px solid var(--ip-border-color);
-    padding: 1px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  &__queue-progress {
-    width: var(--data-progress, 1%);
-    height: 4px;
-    background-color: var(--alert-debug);
-    overflow: hidden;
-
-    &.is-complete {
-      background-color: var(--alert-success);
-    }
   }
 }
 
