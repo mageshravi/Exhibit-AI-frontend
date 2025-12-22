@@ -2,8 +2,11 @@
 import type { Exhibit } from '@/types/list-exhibits-api'
 import InputText from '../inputs/InputText.vue'
 import IconExhibit from '../icons/IconExhibit.vue'
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
+import { updateExhibitCode } from '@/utils/exhibit'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const props = defineProps<{ exhibit: Exhibit | null }>()
 const fileDisplay = computed(() => {
   if (!props.exhibit) {
@@ -13,9 +16,33 @@ const fileDisplay = computed(() => {
   return filename
 })
 
+const state = reactive({
+  exhibitCode: props.exhibit?.exhibit_code || null,
+  errors: [],
+})
+
 const emits = defineEmits<{
+  (e: 'updateExhibit', exhibit: Exhibit): void
   (e: 'close'): void
 }>()
+
+const saveExhibitCode = () => {
+  // reset error text
+  state.errors = []
+
+  const exhibitCode = state.exhibitCode?.trim() || null
+
+  // call API to update exhibit code
+  updateExhibitCode(route.params.caseUuid as string, props.exhibit?.id as number, exhibitCode)
+    .then((response) => {
+      alert('Exhibit code updated successfully.')
+      emits('updateExhibit', response.data)
+      emits('close')
+    })
+    .catch((error) => {
+      state.errors = error.response?.data?.exhibit_code || ['Failed to update exhibit code.']
+    })
+}
 </script>
 
 <template>
@@ -36,10 +63,18 @@ const emits = defineEmits<{
         <input-text
           class="c-edit-exhibit__ip"
           label="Exhibit Code"
-          :value="props.exhibit?.exhibit_code || null"
+          v-model="state.exhibitCode"
+          :error-text="state.errors.join('<br>')"
+          @keyup.enter="saveExhibitCode"
         />
         <div class="c-edit-exhibit__btn-wrapper">
-          <button type="button" class="c-edit-exhibit__btn m-btn m-btn--primary">Save</button>
+          <button
+            type="button"
+            class="c-edit-exhibit__btn m-btn m-btn--primary"
+            @click="saveExhibitCode"
+          >
+            Save
+          </button>
           <button
             type="button"
             class="c-edit-exhibit__btn m-btn m-btn--secondary"

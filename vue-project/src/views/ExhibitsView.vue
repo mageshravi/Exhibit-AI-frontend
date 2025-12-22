@@ -41,6 +41,14 @@ const totalPages = computed(() => {
   return Math.ceil(state.listExhibitsResponse.count / pageSize)
 })
 
+const fetchExhibits = () => {
+  const caseUuid = route.params.caseUuid as string
+
+  getCaseExhibits(caseUuid, state.page).then((apiResponse) => {
+    state.listExhibitsResponse = apiResponse
+  })
+}
+
 onMounted(() => {
   const caseUuid = route.params.caseUuid as string
 
@@ -52,24 +60,19 @@ onMounted(() => {
     state.case = caseData
   })
 
-  getCaseExhibits(caseUuid).then((apiResponse) => {
-    state.listExhibitsResponse = apiResponse
-  })
+  fetchExhibits()
 })
 
 watch(
   () => route.query.page,
   (newPage) => {
-    const caseUuid = route.params.caseUuid as string
     let pageNumber = 1
     if (newPage) {
       pageNumber = parseInt(newPage?.toString()) || 1
     }
     state.page = pageNumber
 
-    getCaseExhibits(caseUuid, pageNumber).then((apiResponse) => {
-      state.listExhibitsResponse = apiResponse
-    })
+    fetchExhibits()
   },
 )
 </script>
@@ -94,6 +97,7 @@ watch(
     <edit-exhibit-modal
       v-if="state.editExhibit"
       :exhibit="state.editExhibit"
+      @update-exhibit="fetchExhibits"
       @close="state.editExhibit = null"
     />
   </div>
