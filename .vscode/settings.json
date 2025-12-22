@@ -14,8 +14,9 @@
     "**/node_modules": true
   },
   "workbench.colorCustomizations": {
-    "activityBar.background": "#28166C",
-    "titleBar.activeBackground": "#381F97",
+    "activityBar.foreground": "#fff",
+    "activityBar.background": "#064624",
+    "titleBar.activeBackground": "#098141",
     "titleBar.activeForeground": "#FAF9FE"
   },
   "[vue]": {
