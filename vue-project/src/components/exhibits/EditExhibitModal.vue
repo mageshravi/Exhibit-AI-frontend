@@ -2,7 +2,7 @@
 import type { Exhibit } from '@/types/list-exhibits-api'
 import InputText from '../inputs/InputText.vue'
 import IconExhibit from '../icons/IconExhibit.vue'
-import { computed, defineEmits } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<{ exhibit: Exhibit | null }>()
 const fileDisplay = computed(() => {
