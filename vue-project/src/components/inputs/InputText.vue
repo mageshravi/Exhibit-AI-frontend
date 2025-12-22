@@ -1,47 +1,33 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
 // make props with default values for InputText component
 const props = defineProps<{
   label: string
   placeholder?: string | null
-  value?: string | null
+  modelValue?: string | null
   required?: boolean
   helpText?: string | null
   errorText?: string | null
   hasError?: boolean
 }>()
 
-interface InputTextState {
-  label: string
-  placeholder: string | null
-  value: string | null
-  required: boolean
-  helpText: string | null
-  errorText: string | null
-}
-
-const state = reactive<InputTextState>({
-  label: props.label || 'Input Label',
-  placeholder: props.placeholder || '',
-  value: props.value || '',
-  required: props.required || false,
-  helpText: props.helpText || null,
-  errorText: props.errorText || null,
-})
+const emits = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+}>()
 </script>
 
 <template>
-  <div class="m-textbox" :class="{ 'has-error': state.errorText && state.errorText.length > 0 }">
-    <label for="textbox-id" class="m-textbox__label">{{ state.label }}</label>
-    <span class="m-textbox__error-text">{{ state.errorText }}</span>
+  <div class="m-textbox" :class="{ 'has-error': props.errorText && props.errorText.length > 0 }">
+    <label for="textbox-id" class="m-textbox__label">{{ props.label }}</label>
+    <span v-if="props.errorText" class="m-textbox__error-text">{{ props.errorText }}</span>
     <input
       type="text"
       id="textbox-id"
       class="m-textbox__input"
-      :placeholder="state.placeholder ?? ''"
-      :required="state.required"
-      :value="state.value ?? ''"
+      :placeholder="props.placeholder ?? ''"
+      :required="props.required"
+      :value="props.modelValue ?? ''"
+      @input="emits('update:modelValue', ($event.target as HTMLInputElement)?.value ?? '')"
     />
-    <span class="m-textbox__help-text">{{ state.helpText }}</span>
+    <span v-if="props.helpText" class="m-textbox__help-text">{{ props.helpText }}</span>
   </div>
 </template>
