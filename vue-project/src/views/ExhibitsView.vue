@@ -3,6 +3,7 @@ import CaseHeader from '@/components/CaseHeader.vue'
 import UploadFiles from '@/components/exhibits/UploadFiles.vue'
 import ExhibitItem from '@/components/exhibits/ExhibitItem.vue'
 import EditExhibitModal from '@/components/exhibits/EditExhibitModal.vue'
+import ViewExhibitModal from '@/components/exhibits/ViewExhibitModal.vue'
 import ThePagination from '@/components/ThePagination.vue'
 import { reactive, computed, onMounted, watch } from 'vue'
 import type { Case } from '@/types/chat-types'
@@ -15,6 +16,7 @@ interface ExhibitsState {
   page: number
   listExhibitsResponse: ListExhibitsResponse | null
   editExhibit: Exhibit | null
+  viewExhibit: Exhibit | null
 }
 
 const route = useRoute()
@@ -30,6 +32,7 @@ const state = reactive<ExhibitsState>({
   case: null,
   page: page,
   listExhibitsResponse: null,
+  viewExhibit: null,
   editExhibit: null,
 })
 
@@ -86,6 +89,11 @@ watch(
         v-for="exhibit in state.listExhibitsResponse?.results"
         :key="exhibit.id"
         v-bind="exhibit"
+        @info="
+          (exhibit) => {
+            state.viewExhibit = exhibit
+          }
+        "
         @edit="
           (exhibit) => {
             state.editExhibit = exhibit
@@ -95,6 +103,11 @@ watch(
       />
       <the-pagination :current="state.page" :total="totalPages"></the-pagination>
     </div>
+    <view-exhibit-modal
+      v-if="state.viewExhibit"
+      :exhibit="state.viewExhibit"
+      @close="state.viewExhibit = null"
+    />
     <edit-exhibit-modal
       v-if="state.editExhibit"
       :exhibit="state.editExhibit"
