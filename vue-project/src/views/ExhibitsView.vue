@@ -91,6 +91,7 @@ watch(
             state.editExhibit = exhibit
           }
         "
+        @refresh="fetchExhibits"
       />
       <the-pagination :current="state.page" :total="totalPages"></the-pagination>
     </div>

@@ -20,4 +20,13 @@ function updateExhibitCode(
   )
 }
 
-export { updateExhibitCode }
+function deleteExhibit(caseUuid: string, exhibitId: number): Promise<AxiosResponse> {
+  const url = `/api/poc/cases/${caseUuid}/exhibits/${exhibitId}/`
+  return axios.delete(url, {
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken'),
+    },
+  })
+}
+
+export { updateExhibitCode, deleteExhibit }

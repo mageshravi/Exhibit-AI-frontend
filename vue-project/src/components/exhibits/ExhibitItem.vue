@@ -2,17 +2,35 @@
 import type { Exhibit } from '@/types/list-exhibits-api'
 import IconExhibit from '../icons/IconExhibit.vue'
 import { computed } from 'vue'
+import { deleteExhibit } from '@/utils/exhibit'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const props = defineProps<Exhibit>()
 
 const emits = defineEmits<{
   (e: 'info', exhibit: Exhibit): void
   (e: 'edit', exhibit: Exhibit): void
+  (e: 'refresh'): void
 }>()
 const fileDisplay = computed(() => {
   const filename = props.filename || props.file.split('/').pop() || 'Unknown'
   return filename
 })
+
+const deleteExhibitItem = () => {
+  if (!confirm('Are you sure you want to delete this exhibit? This action cannot be undone.')) {
+    return
+  }
+
+  deleteExhibit(route.params.caseUuid as string, props.id as number)
+    .then(() => {
+      emits('refresh')
+    })
+    .catch(() => {
+      alert('Failed to delete exhibit.')
+    })
+}
 </script>
 <template>
   <div class="c-exhibit-item">
@@ -32,7 +50,10 @@ const fileDisplay = computed(() => {
         class="c-exhibit-item__action c-exhibit-item__action--edit"
         @click="emits('edit', props)"
       ></span>
-      <span class="c-exhibit-item__action c-exhibit-item__action--delete"></span>
+      <span
+        class="c-exhibit-item__action c-exhibit-item__action--delete"
+        @click="deleteExhibitItem"
+      ></span>
     </div>
   </div>
 </template>
