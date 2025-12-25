@@ -2,10 +2,12 @@
 import CaseHeader from '@/components/CaseHeader.vue'
 import UploadFiles from '@/components/exhibits/UploadFiles.vue'
 import ExhibitItem from '@/components/exhibits/ExhibitItem.vue'
+import EditExhibitModal from '@/components/exhibits/EditExhibitModal.vue'
+import ViewExhibitModal from '@/components/exhibits/ViewExhibitModal.vue'
 import ThePagination from '@/components/ThePagination.vue'
 import { reactive, computed, onMounted, watch } from 'vue'
 import type { Case } from '@/types/chat-types'
-import type { ListExhibitsResponse } from '@/types/list-exhibits-api'
+import type { Exhibit, ListExhibitsResponse } from '@/types/list-exhibits-api'
 import { getCaseDetails, getCaseExhibits } from '@/utils/case'
 import { useRoute } from 'vue-router'
 
@@ -13,6 +15,8 @@ interface ExhibitsState {
   case: Case | null
   page: number
   listExhibitsResponse: ListExhibitsResponse | null
+  editExhibit: Exhibit | null
+  viewExhibit: Exhibit | null
 }
 
 const route = useRoute()
@@ -28,6 +32,8 @@ const state = reactive<ExhibitsState>({
   case: null,
   page: page,
   listExhibitsResponse: null,
+  viewExhibit: null,
+  editExhibit: null,
 })
 
 const totalPages = computed(() => {
@@ -37,6 +43,14 @@ const totalPages = computed(() => {
 
   return Math.ceil(state.listExhibitsResponse.count / pageSize)
 })
+
+const fetchExhibits = () => {
+  const caseUuid = route.params.caseUuid as string
+
+  getCaseExhibits(caseUuid, state.page).then((apiResponse) => {
+    state.listExhibitsResponse = apiResponse
+  })
+}
 
 onMounted(() => {
   const caseUuid = route.params.caseUuid as string
@@ -49,24 +63,19 @@ onMounted(() => {
     state.case = caseData
   })
 
-  getCaseExhibits(caseUuid).then((apiResponse) => {
-    state.listExhibitsResponse = apiResponse
-  })
+  fetchExhibits()
 })
 
 watch(
   () => route.query.page,
   (newPage) => {
-    const caseUuid = route.params.caseUuid as string
     let pageNumber = 1
     if (newPage) {
       pageNumber = parseInt(newPage?.toString()) || 1
     }
     state.page = pageNumber
 
-    getCaseExhibits(caseUuid, pageNumber).then((apiResponse) => {
-      state.listExhibitsResponse = apiResponse
-    })
+    fetchExhibits()
   },
 )
 </script>
@@ -80,9 +89,31 @@ watch(
         v-for="exhibit in state.listExhibitsResponse?.results"
         :key="exhibit.id"
         v-bind="exhibit"
+        @info="
+          (exhibit) => {
+            state.viewExhibit = exhibit
+          }
+        "
+        @edit="
+          (exhibit) => {
+            state.editExhibit = exhibit
+          }
+        "
+        @refresh="fetchExhibits"
       />
       <the-pagination :current="state.page" :total="totalPages"></the-pagination>
     </div>
+    <view-exhibit-modal
+      v-if="state.viewExhibit"
+      :exhibit="state.viewExhibit"
+      @close="state.viewExhibit = null"
+    />
+    <edit-exhibit-modal
+      v-if="state.editExhibit"
+      :exhibit="state.editExhibit"
+      @update-exhibit="fetchExhibits"
+      @close="state.editExhibit = null"
+    />
   </div>
 </template>
 

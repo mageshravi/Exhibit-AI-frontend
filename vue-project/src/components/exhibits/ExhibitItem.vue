@@ -1,41 +1,59 @@
 <script setup lang="ts">
 import type { Exhibit } from '@/types/list-exhibits-api'
+import IconExhibit from '../icons/IconExhibit.vue'
 import { computed } from 'vue'
+import { deleteExhibit } from '@/utils/exhibit'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const props = defineProps<Exhibit>()
+
+const emits = defineEmits<{
+  (e: 'info', exhibit: Exhibit): void
+  (e: 'edit', exhibit: Exhibit): void
+  (e: 'refresh'): void
+}>()
 const fileDisplay = computed(() => {
   const filename = props.filename || props.file.split('/').pop() || 'Unknown'
   return filename
 })
 
-const fileIconClass = computed(() => {
-  const extension = fileDisplay.value.split('.').pop()?.toLowerCase()
-  switch (extension) {
-    case 'docx':
-      return 'c-file--docx'
-    case 'xlsx':
-      return 'c-file--xlsx'
-    case 'pptx':
-      return 'c-file--pptx'
-    case 'eml':
-      return 'c-file--eml'
-    default:
-      return 'c-file'
+const deleteExhibitItem = () => {
+  if (!confirm('Are you sure you want to delete this exhibit? This action cannot be undone.')) {
+    return
   }
-})
+
+  deleteExhibit(route.params.caseUuid as string, props.id as number)
+    .then(() => {
+      emits('refresh')
+    })
+    .catch(() => {
+      alert('Failed to delete exhibit.')
+    })
+}
 </script>
 <template>
   <div class="c-exhibit-item">
-    <span class="c-file" :class="fileIconClass"></span>
+    <IconExhibit :filename="fileDisplay" />
     <div class="c-exhibit-item__file-info">
-      <p class="c-exhibit-item__name" :title="fileDisplay">{{ fileDisplay }}</p>
+      <span v-if="props.exhibit_code" class="c-exhibit-item__code">{{ props.exhibit_code }}</span>
+      <span class="c-exhibit-item__name" :title="fileDisplay">{{ fileDisplay }}</span>
       <small class="c-exhibit-item__status">{{ props.status }}</small>
     </div>
     <div class="c-exhibit-item__file-actions">
       <a class="c-exhibit-item__action" :href="props.file" download></a>
-      <span class="c-exhibit-item__action c-exhibit-item__action--info"></span>
-      <span class="c-exhibit-item__action c-exhibit-item__action--edit"></span>
-      <span class="c-exhibit-item__action c-exhibit-item__action--delete"></span>
+      <span
+        class="c-exhibit-item__action c-exhibit-item__action--info"
+        @click="emits('info', props)"
+      ></span>
+      <span
+        class="c-exhibit-item__action c-exhibit-item__action--edit"
+        @click="emits('edit', props)"
+      ></span>
+      <span
+        class="c-exhibit-item__action c-exhibit-item__action--delete"
+        @click="deleteExhibitItem"
+      ></span>
     </div>
   </div>
 </template>
@@ -52,19 +70,28 @@ const fileIconClass = computed(() => {
     background-color: var(--panel-bg);
   }
 
-  &__name {
-    margin: 0;
+  &__file-info {
     white-space: nowrap;
   }
 
-  &:hover &__name {
-    max-width: 24ch;
-    overflow: hidden;
+  &:hover &__file-info {
     text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &__code {
+    margin-inline-end: 10px;
+    font-weight: bold;
+    color: var(--oxford-blue);
+  }
+
+  &__name {
+    margin: 0;
   }
 
   &__status {
     color: var(--body-txt--secondary);
+    display: block;
 
     &.is-pending {
       color: var(--alert-warning);
@@ -125,34 +152,6 @@ const fileIconClass = computed(() => {
     &--delete::after {
       background-position-x: calc(-3 * var(--icon-size));
     }
-  }
-}
-.c-file {
-  --icon-size: 48px;
-
-  display: inline-block;
-  width: var(--icon-size);
-  height: var(--icon-size);
-  background-image: url('/sprite-file-icons.svg');
-  background-size: calc(var(--icon-size) * 5) var(--icon-size);
-  background-repeat: no-repeat;
-  background-position: left top;
-  flex-shrink: 0;
-
-  &--docx {
-    background-position-x: calc(-1 * var(--icon-size));
-  }
-
-  &--xlsx {
-    background-position-x: calc(-2 * var(--icon-size));
-  }
-
-  &--pptx {
-    background-position-x: calc(-3 * var(--icon-size));
-  }
-
-  &--eml {
-    background-position-x: calc(-4 * var(--icon-size));
   }
 }
 </style>

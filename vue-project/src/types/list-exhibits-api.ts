@@ -5,6 +5,7 @@ interface Exhibit {
   status: string
   error_message: string
   case: string
+  exhibit_code: string | null
   created_at: string
   updated_at: string
 }
