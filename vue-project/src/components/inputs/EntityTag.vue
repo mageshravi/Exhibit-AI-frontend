@@ -2,6 +2,7 @@
 export interface Entity {
   label: string
   value: string
+  data?: Map<string, string>
 }
 
 const props = defineProps<Entity>()
