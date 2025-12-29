@@ -1,37 +1,48 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import EntityTag, { type Entity } from './EntityTag.vue'
+import { reactive, watch } from 'vue'
+import EntityTag from './EntityTag.vue'
 
 const props = defineProps<{
   addBtnLabel: string
   addEntityCallback: () => void
-  entites?: Entity[]
+  entites?: Map<string, string>
 }>()
 
 const state = reactive<{
-  entities: Entity[]
+  entities: Map<string, string>
 }>({
-  entities: props.entites || [],
+  entities: props.entites || new Map(),
 })
 
 const emits = defineEmits<{
-  (e: 'update:entities', value: Entity[]): void
+  (e: 'update:entities', value: Map<string, string>): void
 }>()
 
 const removeEntity = (value: string) => {
-  state.entities = state.entities.filter((entity) => entity.value !== value)
+  state.entities.delete(value)
   emits('update:entities', state.entities)
 }
+
+watch(
+  () => props.entites,
+  (newVal) => {
+    if (newVal) {
+      state.entities = newVal
+    }
+  },
+  { deep: true },
+)
 </script>
 
 <template>
   <div class="m-entity-selector {{ modifier_class }}">
     <label class="m-entity-selector__label"><slot></slot></label>
-    <div class="m-entity-selector__selected-entities">
+    <div v-if="state.entities" class="m-entity-selector__selected-entities">
       <EntityTag
-        v-for="entity in state.entities"
-        :key="entity.value"
-        v-bind="entity"
+        v-for="[value, label] in state.entities"
+        :key="value"
+        :label="label"
+        :value="value"
         @remove="removeEntity"
       />
     </div>
