@@ -1,21 +1,40 @@
 <script setup lang="ts">
+import { ref, onMounted, reactive } from 'vue'
 import { type Litigant } from '@/types/list-litigants-api'
-import { ref, onMounted } from 'vue'
+import InputCheckbox from '@/components/inputs/InputCheckbox.vue'
 
 const props = defineProps<{
   litigant: Litigant
   type: 'plaintiff' | 'defendant' | 'witness'
+  ourClientRole: 'plaintiff' | 'defendant' | null
 }>()
+
+const state = reactive<{
+  isOurClient: boolean
+}>({
+  isOurClient: false,
+})
 
 const useBtn = ref<HTMLButtonElement | null>(null)
 
 const emits = defineEmits<{
-  (e: 'confirm', litigant: Litigant): void
+  (e: 'confirm', litigant: Litigant, isOurClient: boolean): void
   (e: 'modal:close'): void
 }>()
 
+const isCheckboxVisible = () => {
+  if (props.ourClientRole === null) {
+    return true
+  }
+  return props.ourClientRole === props.type
+}
+
 const toTitleCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+const confirmSelection = () => {
+  emits('confirm', props.litigant, state.isOurClient)
 }
 
 onMounted(() => {
@@ -47,14 +66,11 @@ onMounted(() => {
       <p v-if="props.litigant.notes" class="c-litigant-info__value">{{ props.litigant.notes }}</p>
       <p v-else class="c-litigant-info__value"><em>None</em></p>
     </div>
-
+    <div class="c-litigant-info__field" v-if="isCheckboxVisible()">
+      <InputCheckbox name="is_our_client" label="Our Client" v-model="state.isOurClient" />
+    </div>
     <div>
-      <button
-        type="button"
-        class="m-btn m-btn--primary"
-        @click="emits('confirm', props.litigant)"
-        ref="useBtn"
-      >
+      <button type="button" class="m-btn m-btn--primary" @click="confirmSelection" ref="useBtn">
         Use as {{ toTitleCase(props.type) }}
       </button>
       &nbsp;

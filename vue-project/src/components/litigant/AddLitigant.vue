@@ -10,6 +10,7 @@ import LitigantInfo from './LitigantInfo.vue'
 
 const props = defineProps<{
   litigantType?: 'plaintiff' | 'defendant' | 'witness'
+  ourClientRole?: 'plaintiff' | 'defendant' | null
 }>()
 
 const searchInput = ref<HTMLInputElement | null>(null)
@@ -31,7 +32,7 @@ const state = reactive<AddLitigantState>({
 })
 
 const emits = defineEmits<{
-  (e: 'confirm', litigant: Litigant): void
+  (e: 'confirm', litigant: Litigant, isOurClient: boolean): void
   (e: 'modal:close'): void
 }>()
 
@@ -185,7 +186,8 @@ watch(
           class="c-add-litigant__selected-info"
           :litigant="state.selectedLitigant"
           :type="props.litigantType || 'plaintiff'"
-          @confirm="emits('confirm', $event)"
+          :our-client-role="props.ourClientRole || null"
+          @confirm="(litigant, isOurClient) => emits('confirm', litigant, isOurClient)"
           @modal:close="state.selectedLitigant = null"
         />
       </Transition>
