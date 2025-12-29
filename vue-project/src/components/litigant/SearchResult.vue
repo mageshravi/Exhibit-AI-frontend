@@ -26,6 +26,7 @@ const props = defineProps<{
 
 <style lang="scss">
 .c-search-result {
+  position: relative;
   padding: 8px 16px 8px 34px;
   border-radius: 10px;
   user-select: none;
@@ -48,8 +49,20 @@ const props = defineProps<{
     color: var(--body-txt--secondary);
   }
 
+  &.is-selected,
   &:hover {
     background-color: var(--panel-bg);
+
+    &::before {
+      --icon-size: 20px;
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 10px;
+      width: var(--icon-size);
+      height: var(--icon-size);
+      background-image: url('/icon-check-circle.svg');
+    }
   }
 }
 </style>
