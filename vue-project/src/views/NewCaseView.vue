@@ -1,20 +1,22 @@
 <script setup lang="ts">
+import { toRaw, reactive } from 'vue'
+import AddLitigant from '@/components/litigant/AddLitigant.vue'
 import InputText from '@/components/inputs/InputText.vue'
 import InputTextarea from '@/components/inputs/InputTextarea.vue'
 import EntitySelector from '@/components/inputs/EntitySelector.vue'
-import AddLitigant from '@/components/AddLitigant.vue'
-import { type Entity } from '@/components/inputs/EntityTag.vue'
-import { toRaw, reactive } from 'vue'
+import type { Litigant } from '@/types/list-litigants-api'
 
-const state = reactive<{
-  plaintiffs: Entity[]
-  defendants: Entity[]
-  witnesses: Entity[]
+interface NewCaseState {
+  plaintiffs: Map<string, string>
+  defendants: Map<string, string>
+  witnesses: Map<string, string>
   addLitigantModalOpen: 'plaintiff' | 'defendant' | 'witness' | false
-}>({
-  plaintiffs: [],
-  defendants: [],
-  witnesses: [],
+}
+
+const state = reactive<NewCaseState>({
+  plaintiffs: new Map<string, string>(),
+  defendants: new Map<string, string>(),
+  witnesses: new Map<string, string>(),
   addLitigantModalOpen: false,
 })
 
@@ -34,19 +36,27 @@ const hideLitigantModal = () => {
   state.addLitigantModalOpen = false
 }
 
-const updatePlaintiffs = (plaintiffs: Entity[]) => {
-  console.log('Updating plaintiffs:', plaintiffs)
-  state.plaintiffs = toRaw(plaintiffs)
+const updatePlaintiffs = (plaintiffs: Map<string, string>) => {
+  state.plaintiffs = new Map(toRaw(plaintiffs))
 }
 
-const updateDefendants = (defendants: Entity[]) => {
-  console.log('Updating defendants:', defendants)
-  state.defendants = toRaw(defendants)
+const updateDefendants = (defendants: Map<string, string>) => {
+  state.defendants = new Map(toRaw(defendants))
 }
 
-const updateWitnesses = (witnesses: Entity[]) => {
-  console.log('Updating witnesses:', witnesses)
-  state.witnesses = toRaw(witnesses)
+const updateWitnesses = (witnesses: Map<string, string>) => {
+  state.witnesses = new Map(toRaw(witnesses))
+}
+
+const handleNewLitigant = (litigant: Litigant) => {
+  if (state.addLitigantModalOpen === 'plaintiff') {
+    state.plaintiffs.set(litigant.id.toString(), litigant.name)
+  } else if (state.addLitigantModalOpen === 'defendant') {
+    state.defendants.set(litigant.id.toString(), litigant.name)
+  } else if (state.addLitigantModalOpen === 'witness') {
+    state.witnesses.set(litigant.id.toString(), litigant.name)
+  }
+  hideLitigantModal()
 }
 
 const create = () => {
@@ -101,6 +111,7 @@ const create = () => {
       <AddLitigant
         v-if="state.addLitigantModalOpen"
         :litigant-type="state.addLitigantModalOpen"
+        @confirm="handleNewLitigant"
         @modal:close="hideLitigantModal"
         class="v-new-case__add-litigant-modal"
       />
