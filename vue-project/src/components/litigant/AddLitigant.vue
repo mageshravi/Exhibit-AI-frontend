@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watch, reactive, ref } from 'vue'
 import type { Litigant } from '@/types/list-litigants-api'
-import { searchLitigants } from '@/utils/litigant'
+import { searchLitigants, createLitigant, type CreateLitigantPayload } from '@/utils/litigant'
 import InputText from '@/components/inputs/InputText.vue'
 import InputTextarea from '@/components/inputs/InputTextarea.vue'
 import InputSearch from '@/components/inputs/InputSearch.vue'
@@ -21,6 +21,15 @@ interface AddLitigantState {
   searchResults: Litigant[] | null
   focusedResultIndex: number
   selectedLitigant: Litigant | null
+  ipName: string
+  ipBio: string
+  ipAddress: string
+  ipEmail: string
+  ipMobile: string
+  ipNotes: string
+  errors: {
+    [key: string]: string[]
+  }
 }
 
 const state = reactive<AddLitigantState>({
@@ -29,6 +38,13 @@ const state = reactive<AddLitigantState>({
   searchResults: null,
   focusedResultIndex: -1,
   selectedLitigant: null,
+  ipName: '',
+  ipBio: '',
+  ipAddress: '',
+  ipEmail: '',
+  ipMobile: '',
+  ipNotes: '',
+  errors: {},
 })
 
 const emits = defineEmits<{
@@ -125,6 +141,33 @@ const performSearch = (event: KeyboardEvent) => {
     })
 }
 
+const createNewLitigant = () => {
+  const payload: CreateLitigantPayload = {
+    name: state.ipName,
+    bio: state.ipBio,
+    address: state.ipAddress,
+    email: state.ipEmail,
+    phone: state.ipMobile,
+    notes: state.ipNotes,
+  }
+
+  // reset all errors
+  state.errors = {}
+
+  createLitigant(payload)
+    .then((response) => {
+      if (response?.data) {
+        state.selectedLitigant = response.data
+      }
+    })
+    .catch((error) => {
+      console.error('Error creating litigant:', error)
+      if (error.response && error.response.data) {
+        state.errors = error.response.data
+      }
+    })
+}
+
 watch(
   () => state.selectedLitigant,
   (newVal: Litigant | null) => {
@@ -148,25 +191,54 @@ watch(
     </header>
     <div class="c-add-litigant__body">
       <h2>Add {{ toTitleCase(props.litigantType || 'Litigant') }}</h2>
-      <InputText label="Full Name" placeholder="Santhosh Subramanian" required />
-      <InputText label="Bio" placeholder="Managing Director, Sanyogi Ltd" required />
+      <InputText
+        label="Full Name"
+        placeholder="Santhosh Subramanian"
+        required
+        v-model="state.ipName"
+        :has-error="'name' in state.errors"
+        :error-text="state.errors?.name?.join(' ')"
+      />
+      <InputText
+        label="Bio"
+        placeholder="Managing Director, Sanyogi Ltd"
+        required
+        v-model="state.ipBio"
+        :has-error="'bio' in state.errors"
+        :error-text="state.errors?.bio?.join(' ')"
+      />
       <InputTextarea
         label="Address"
         placeholder="1234 Elm Street, Springfield, IL, 62704"
+        v-model="state.ipAddress"
         required
+        :has-error="'address' in state.errors"
+        :error-text="state.errors?.address?.join(' ')"
       />
-      <InputText label="Email" placeholder="santhoshsub@yahoomail.com" />
+      <InputText
+        label="Email"
+        placeholder="santhoshsub@yahoomail.com"
+        v-model="state.ipEmail"
+        :has-error="'email' in state.errors"
+        :error-text="state.errors?.email?.join(' ')"
+      />
       <InputText
         label="Mobile"
         placeholder="+91-9500027232"
         help-text="Format: +(country-code)-(10-digit-phone-number) without spaces."
+        v-model="state.ipMobile"
+        :has-error="'phone' in state.errors"
+        :error-text="state.errors?.phone?.join(' ')"
       />
       <InputTextarea
         label="Notes"
         placeholder="Any other relevant information about the litigant."
+        v-model="state.ipNotes"
+        :has-error="'notes' in state.errors"
+        :error-text="state.errors?.notes?.join(' ')"
       />
       <div>
-        <button type="button" class="m-btn m-btn--primary">
+        <button type="button" class="m-btn m-btn--primary" @click="createNewLitigant">
           Add {{ toTitleCase(props.litigantType || 'Litigant') }}
         </button>
         &nbsp;
@@ -177,7 +249,7 @@ watch(
     </div>
     <div
       class="c-add-litigant__overlay"
-      :class="{ 'is-hidden': !state.searchFocused }"
+      :class="{ 'is-hidden': !state.searchFocused && !state.selectedLitigant }"
       @click.self="exitSearchMode"
     >
       <Transition name="fade-left">
