@@ -1,4 +1,3 @@
-import NewCaseView from '@/views/NewCaseView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
