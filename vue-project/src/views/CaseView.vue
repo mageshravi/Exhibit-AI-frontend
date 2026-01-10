@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CaseHeader from '@/components/CaseHeader.vue'
 import UploadFiles from '@/components/exhibits/UploadFiles.vue'
-import { getCaseDetails } from '@/utils/case'
+import { getCaseDetails_v2 } from '@/utils/case'
 import type { Case } from '@/types/chat-types'
 import { reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -24,17 +24,21 @@ const descBtnLabel = computed(() => (state.descriptionExpanded ? 'Show less' : '
 
 onMounted(() => {
   const caseUuid = route.params.caseUuid as string
-  getCaseDetails(caseUuid).then((caseData) => {
-    if (!caseData) {
-      return
-    }
 
-    state.case = caseData
+  getCaseDetails_v2(caseUuid).then((response) => {
+    state.case = response.data
   })
 })
 
 function toggleDescription() {
   state.descriptionExpanded = !state.descriptionExpanded
+}
+
+function handleUploadComplete() {
+  const result = confirm('Files uploaded successfully. Do you want to refresh the page?')
+  if (result) {
+    window.location.reload()
+  }
 }
 </script>
 
@@ -64,7 +68,7 @@ function toggleDescription() {
         {{ descBtnLabel }}
       </button>
     </div>
-    <UploadFiles class="v-case-page__exhibits" />
+    <UploadFiles class="v-case-page__exhibits" @upload-complete="handleUploadComplete" />
   </div>
 </template>
 

@@ -8,7 +8,7 @@ import ThePagination from '@/components/ThePagination.vue'
 import { reactive, computed, onMounted, watch } from 'vue'
 import type { Case } from '@/types/chat-types'
 import type { Exhibit, ListExhibitsResponse } from '@/types/list-exhibits-api'
-import { getCaseDetails, getCaseExhibits } from '@/utils/case'
+import { getCaseDetails_v2, getCaseExhibits_v2 } from '@/utils/case'
 import { useRoute } from 'vue-router'
 
 interface ExhibitsState {
@@ -47,20 +47,27 @@ const totalPages = computed(() => {
 const fetchExhibits = () => {
   const caseUuid = route.params.caseUuid as string
 
-  getCaseExhibits(caseUuid, state.page).then((apiResponse) => {
-    state.listExhibitsResponse = apiResponse
+  getCaseExhibits_v2(caseUuid, state.page).then((apiResponse) => {
+    state.listExhibitsResponse = apiResponse.data
   })
+}
+
+function handleUploadComplete() {
+  const result = confirm('Files uploaded successfully. Do you want to refresh the page?')
+  if (result) {
+    window.location.reload()
+  }
 }
 
 onMounted(() => {
   const caseUuid = route.params.caseUuid as string
 
-  getCaseDetails(caseUuid).then((caseData) => {
-    if (!caseData) {
-      return
-    }
+  if (!caseUuid) {
+    return
+  }
 
-    state.case = caseData
+  getCaseDetails_v2(caseUuid).then((response) => {
+    state.case = response.data
   })
 
   fetchExhibits()
@@ -83,7 +90,7 @@ watch(
 <template>
   <div class="v-exhibits-page">
     <case-header class="v-exhibits-page__header" :title="state.case?.title || 'Loading...'" />
-    <upload-files class="v-exhibits-page__upload" compact />
+    <upload-files class="v-exhibits-page__upload" compact @upload-complete="handleUploadComplete" />
     <div class="v-exhibits-page__exhibit-list">
       <exhibit-item
         v-for="exhibit in state.listExhibitsResponse?.results"
