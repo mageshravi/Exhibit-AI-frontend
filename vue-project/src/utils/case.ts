@@ -17,6 +17,10 @@ function getCaseDetails(caseUuid: string): Promise<Case | null> {
     })
 }
 
+function getCaseDetails_v2(caseUuid: string): Promise<AxiosResponse<Case>> {
+  return axios.get(`/api/poc/cases/${caseUuid}/`)
+}
+
 function getCaseExhibits(
   caseUuid: string,
   pageNumber: number = 1,
@@ -33,6 +37,14 @@ function getCaseExhibits(
       console.error('Error fetching case exhibits:', error)
       return null
     })
+}
+
+function getCaseExhibits_v2(
+  caseUuid: string,
+  pageNumber: number = 1,
+): Promise<AxiosResponse<ListExhibitsResponse>> {
+  const url = `/api/poc/cases/${caseUuid}/exhibits/?page=${pageNumber}`
+  return axios.get(url)
 }
 
 interface CaseLitigant {
@@ -57,4 +69,12 @@ function createCase(payload: CreateCasePayload): Promise<AxiosResponse<Case>> {
   })
 }
 
-export { getCaseDetails, getCaseExhibits, type CaseLitigant, type CreateCasePayload, createCase }
+export {
+  getCaseDetails,
+  getCaseDetails_v2,
+  getCaseExhibits,
+  getCaseExhibits_v2,
+  type CaseLitigant,
+  type CreateCasePayload,
+  createCase,
+}
