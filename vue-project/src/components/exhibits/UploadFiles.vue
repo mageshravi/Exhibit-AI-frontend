@@ -58,6 +58,10 @@ const state = reactive<UploadFilesState>({
   queuedFiles: null,
 })
 
+const emits = defineEmits<{
+  (e: 'upload-complete'): void
+}>()
+
 const fileInput = ref<HTMLInputElement | null>(null)
 const dragCounter = ref<number>(0)
 const isDragging = ref(false)
@@ -123,7 +127,7 @@ watch(
   },
 )
 
-const processFiles = function () {
+const processFiles = async function () {
   if (!state.queuedFiles?.length) {
     return
   }
@@ -133,8 +137,13 @@ const processFiles = function () {
       continue
     }
 
-    uploadFile(item)
+    await uploadFile(item)
   }
+
+  // Notify parent component after all files are processed (after a 2 second delay)
+  setTimeout(() => {
+    emits('upload-complete')
+  }, 2000)
 }
 
 const uploadFile = function (queuedFile: QueuedFile) {
