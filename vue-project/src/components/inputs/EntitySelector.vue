@@ -7,6 +7,7 @@ const props = defineProps<{
   addBtnLabel: string
   addEntityCallback: () => void
   entities?: Map<string, Entity>
+  errorText?: string
 }>()
 
 const state = reactive<{
@@ -38,6 +39,7 @@ watch(
 <template>
   <div class="m-entity-selector {{ modifier_class }}">
     <label class="m-entity-selector__label"><slot></slot></label>
+    <span v-if="props.errorText" class="m-entity-selector__error-text">{{ props.errorText }}</span>
     <div v-if="state.entities" class="m-entity-selector__selected-entities">
       <EntityTag
         v-for="[id, entity] in state.entities"

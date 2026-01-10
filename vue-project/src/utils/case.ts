@@ -1,3 +1,5 @@
+import axios, { type AxiosResponse } from 'axios'
+import Cookies from 'js-cookie'
 import type { Case } from '@/types/chat-types'
 import type { ListExhibitsResponse } from '@/types/list-exhibits-api'
 
@@ -33,4 +35,26 @@ function getCaseExhibits(
     })
 }
 
-export { getCaseDetails, getCaseExhibits }
+interface CaseLitigant {
+  litigant: number
+  role: number
+  is_our_client: boolean
+}
+
+interface CreateCasePayload {
+  title: string
+  description: string
+  case_number?: string
+  case_litigants_data: CaseLitigant[]
+}
+
+function createCase(payload: CreateCasePayload): Promise<AxiosResponse<Case>> {
+  return axios.post('/api/poc/cases/', payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken'),
+    },
+  })
+}
+
+export { getCaseDetails, getCaseExhibits, type CaseLitigant, type CreateCasePayload, createCase }
