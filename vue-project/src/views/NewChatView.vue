@@ -5,7 +5,7 @@ import Cookies from 'js-cookie'
 import { useRoute } from 'vue-router'
 import { onMounted, reactive } from 'vue'
 import router from '@/router'
-import { getCaseDetails } from '@/utils/case'
+import { getCaseDetails_v2 } from '@/utils/case'
 import type { Case } from '@/types/chat-types'
 import { sendMessage } from '@/utils/chat'
 
@@ -30,12 +30,8 @@ onMounted(() => {
     return
   }
 
-  getCaseDetails(caseUuid).then((caseData) => {
-    if (caseData === null) {
-      return
-    }
-
-    state.case = caseData
+  getCaseDetails_v2(caseUuid).then((response) => {
+    state.case = response.data
   })
 })
 
