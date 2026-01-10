@@ -1,7 +1,33 @@
 <script setup lang="ts">
+import { onMounted, reactive } from 'vue'
+import { useRoute } from 'vue-router'
+import { getCaseExhibits_v2 } from '@/utils/case'
+
+const route = useRoute()
+
 const props = defineProps<{
   title: string
 }>()
+
+interface CaseHeaderState {
+  exhibitsCount: number
+}
+
+const state = reactive<CaseHeaderState>({
+  exhibitsCount: 1, // to avoid layout jumping
+})
+
+onMounted(() => {
+  const caseUuid = (route.params.caseUuid as string) || ''
+
+  if (!caseUuid) {
+    return
+  }
+
+  getCaseExhibits_v2(caseUuid).then((response) => {
+    state.exhibitsCount = response.data?.count || 0
+  })
+})
 </script>
 <template>
   <header class="c-case-header">
@@ -11,7 +37,7 @@ const props = defineProps<{
       </span>
     </nav>
     <h1 class="c-case-header__title">{{ props.title }}</h1>
-    <nav class="m-tabs">
+    <nav class="m-tabs" v-if="state.exhibitsCount">
       <router-link
         class="m-tabs__tab"
         :to="{ name: 'CaseDetail', params: { caseUuid: $route.params.caseUuid } }"
