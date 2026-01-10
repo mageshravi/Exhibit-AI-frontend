@@ -2,7 +2,7 @@
 import ChatSidebar from '@/components/chat/ChatSidebar.vue'
 import ChatThread from '@/components/chat/ChatThread.vue'
 import CaseHeader from '@/components/CaseHeader.vue'
-import { getCaseDetails } from '@/utils/case'
+import { getCaseDetails_v2 } from '@/utils/case'
 import { computed, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Case } from '@/types/chat-types'
@@ -19,12 +19,14 @@ const caseTitle = computed(() => state.case?.title || 'Loading...')
 
 const route = useRoute()
 onMounted(() => {
-  getCaseDetails(route.params.caseUuid as string).then((caseData) => {
-    if (caseData === null) {
-      return
-    }
+  const caseUuid = route.params.caseUuid as string
 
-    state.case = caseData
+  if (!caseUuid) {
+    return
+  }
+
+  getCaseDetails_v2(caseUuid).then((response) => {
+    state.case = response.data
   })
 })
 </script>
