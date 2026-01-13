@@ -2,6 +2,7 @@ import axios, { type AxiosResponse } from 'axios'
 import Cookies from 'js-cookie'
 import type { Case } from '@/types/chat-types'
 import type { ListExhibitsResponse } from '@/types/list-exhibits-api'
+import type { ListCasesResponse } from '@/types/list-cases-api'
 
 function getCaseDetails(caseUuid: string): Promise<Case | null> {
   return fetch(`/api/poc/cases/${caseUuid}/`)
@@ -69,6 +70,11 @@ function createCase(payload: CreateCasePayload): Promise<AxiosResponse<Case>> {
   })
 }
 
+function searchCases(query: string): Promise<AxiosResponse<ListCasesResponse>> {
+  const url = `/api/poc/cases/?search=${encodeURIComponent(query)}`
+  return axios.get(url)
+}
+
 export {
   getCaseDetails,
   getCaseDetails_v2,
@@ -77,4 +83,5 @@ export {
   type CaseLitigant,
   type CreateCasePayload,
   createCase,
+  searchCases,
 }
