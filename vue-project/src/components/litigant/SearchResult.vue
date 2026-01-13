@@ -24,7 +24,7 @@ const props = defineProps<{
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .c-search-result {
   position: relative;
   padding: 8px 16px 8px 34px;
