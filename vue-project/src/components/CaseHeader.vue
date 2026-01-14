@@ -33,7 +33,7 @@ onMounted(() => {
   <header class="c-case-header">
     <nav class="m-breadcrumbs">
       <span class="m-breadcrumbs__item">
-        <a class="m-breadcrumbs__link" href="#cases">Cases</a>
+        <router-link class="m-breadcrumbs__link" :to="{ name: 'Home' }">Cases</router-link>
       </span>
     </nav>
     <h1 class="c-case-header__title">{{ props.title }}</h1>
