@@ -3,8 +3,9 @@ import Cookies from 'js-cookie'
 import type { Case } from '@/types/chat-types'
 import type { ListExhibitsResponse } from '@/types/list-exhibits-api'
 import type { ListCasesResponse } from '@/types/list-cases-api'
+import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
 
-function getCaseDetails(caseUuid: string): Promise<Case | null> {
+function getCaseDetails(caseUuid: string): Promise<RetrieveCaseResponse | null> {
   return fetch(`/api/poc/cases/${caseUuid}/`)
     .then((response) => {
       if (!response.ok) {
@@ -18,7 +19,14 @@ function getCaseDetails(caseUuid: string): Promise<Case | null> {
     })
 }
 
-function getCaseDetails_v2(caseUuid: string): Promise<AxiosResponse<Case>> {
+function getCaseDetails_v2(
+  caseUuid: string,
+  compact: boolean = true,
+): Promise<AxiosResponse<RetrieveCaseResponse>> {
+  if (compact) {
+    return axios.get(`/api/poc/cases/${caseUuid}/?compact=true`)
+  }
+
   return axios.get(`/api/poc/cases/${caseUuid}/`)
 }
 

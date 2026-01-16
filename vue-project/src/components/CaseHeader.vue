@@ -17,6 +17,14 @@ const state = reactive<CaseHeaderState>({
   exhibitsCount: 1, // to avoid layout jumping
 })
 
+const emits = defineEmits<{
+  /* 'exhibits:count-updated' emitted when the number of exhibits changes.
+   * Helps parent components to update exhibit-related UI elements accordingly
+   * without duplicate API calls.
+   */
+  (e: 'exhibits:count-updated', count: number): void
+}>()
+
 onMounted(() => {
   const caseUuid = (route.params.caseUuid as string) || ''
 
@@ -26,6 +34,7 @@ onMounted(() => {
 
   getCaseExhibits_v2(caseUuid).then((response) => {
     state.exhibitsCount = response.data?.count || 0
+    emits('exhibits:count-updated', state.exhibitsCount)
   })
 })
 </script>

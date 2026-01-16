@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import CaseHeader from '@/components/CaseHeader.vue'
-import UploadFiles from '@/components/exhibits/UploadFiles.vue'
-import { getCaseDetails_v2 } from '@/utils/case'
-import type { Case } from '@/types/chat-types'
 import { reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { getCaseDetails_v2 } from '@/utils/case'
+import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
+import CaseHeader from '@/components/CaseHeader.vue'
+import UploadFiles from '@/components/exhibits/UploadFiles.vue'
+import LitigantSection from '@/components/case/LitigantSection.vue'
 
 interface CaseViewState {
-  case: Case | null
+  case: RetrieveCaseResponse | null
   descriptionExpanded: boolean
+  showUploadFiles: boolean
 }
 
 const route = useRoute()
@@ -16,22 +18,59 @@ const route = useRoute()
 const state = reactive(<CaseViewState>{
   case: null,
   descriptionExpanded: false,
+  showUploadFiles: false,
 })
 
 const caseTitle = computed(() => state.case?.title || 'Loading...')
 
 const descBtnLabel = computed(() => (state.descriptionExpanded ? 'Show less' : 'Show more'))
 
+const plaintiffs = computed(() => {
+  return (
+    state.case?.case_litigants?.filter((litigant) => litigant.role.handle === 'PLAINTIFF') || []
+  )
+})
+
+const thirdPartyPlaintiffs = computed(() => {
+  return (
+    state.case?.case_litigants?.filter(
+      (litigant) => litigant.role.handle === 'THIRD_PARTY_PLAINTIFF',
+    ) || []
+  )
+})
+
+const defendants = computed(() => {
+  return (
+    state.case?.case_litigants?.filter((litigant) => litigant.role.handle === 'DEFENDANT') || []
+  )
+})
+
+const thirdPartyDefendants = computed(() => {
+  return (
+    state.case?.case_litigants?.filter(
+      (litigant) => litigant.role.handle === 'THIRD_PARTY_DEFENDANT',
+    ) || []
+  )
+})
+
+const witnesses = computed(() => {
+  return state.case?.case_litigants?.filter((litigant) => litigant.role.handle === 'WITNESS') || []
+})
+
 onMounted(() => {
   const caseUuid = route.params.caseUuid as string
 
-  getCaseDetails_v2(caseUuid).then((response) => {
+  getCaseDetails_v2(caseUuid, false).then((response) => {
     state.case = response.data
   })
 })
 
 function toggleDescription() {
   state.descriptionExpanded = !state.descriptionExpanded
+}
+
+function handleExhibitCountChange(count: number) {
+  state.showUploadFiles = !count
 }
 
 function handleUploadComplete() {
@@ -44,7 +83,11 @@ function handleUploadComplete() {
 
 <template>
   <div class="v-case-page">
-    <CaseHeader class="v-case-page__header" :title="caseTitle" />
+    <CaseHeader
+      class="v-case-page__header"
+      :title="caseTitle"
+      @exhibits:count-updated="handleExhibitCountChange"
+    />
     <div class="v-case-page__overview">
       <div>
         <h3>Case number</h3>
@@ -68,7 +111,39 @@ function handleUploadComplete() {
         {{ descBtnLabel }}
       </button>
     </div>
-    <UploadFiles class="v-case-page__exhibits" @upload-complete="handleUploadComplete" />
+    <UploadFiles
+      v-if="state.showUploadFiles"
+      class="v-case-page__exhibits"
+      :case-uuid="route.params.caseUuid as string"
+      @upload:complete="handleUploadComplete"
+    />
+    <div class="v-case-page__litigants">
+      <LitigantSection
+        v-if="plaintiffs.length"
+        :type="plaintiffs.length > 1 ? 'plaintiffs' : 'plaintiff'"
+        v-bind:litigants="plaintiffs"
+      />
+      <LitigantSection
+        v-if="thirdPartyPlaintiffs.length"
+        :type="thirdPartyPlaintiffs.length > 1 ? 'third party plaintiffs' : 'third party plaintiff'"
+        v-bind:litigants="thirdPartyPlaintiffs"
+      />
+      <LitigantSection
+        v-if="defendants.length"
+        :type="defendants.length > 1 ? 'defendants' : 'defendant'"
+        v-bind:litigants="defendants"
+      />
+      <LitigantSection
+        v-if="thirdPartyDefendants.length"
+        :type="thirdPartyDefendants.length > 1 ? 'third party defendants' : 'third party defendant'"
+        v-bind:litigants="thirdPartyDefendants"
+      />
+      <LitigantSection
+        v-if="witnesses.length"
+        :type="witnesses.length > 1 ? 'witnesses' : 'witness'"
+        v-bind:litigants="witnesses"
+      />
+    </div>
   </div>
 </template>
 
@@ -133,6 +208,11 @@ function handleUploadComplete() {
       margin-block: 10px;
       color: #7e5c9b;
     }
+  }
+
+  &__litigants {
+    grid-column: 3 / span 4;
+    grid-row: 4;
   }
 }
 </style>
