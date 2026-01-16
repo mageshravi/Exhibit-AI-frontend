@@ -137,6 +137,11 @@ watch(
   &__search-results-wrapper {
     padding-block-start: 4px;
     padding-inline: 32px 18px;
+
+    // if any sibling is hovered, remove focus background
+    &:hover .c-search-result.is-focused:not(:hover) {
+      background-color: transparent;
+    }
   }
 }
 </style>
