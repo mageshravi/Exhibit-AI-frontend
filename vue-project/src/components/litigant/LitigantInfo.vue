@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/*
+ * Component to display detailed information about a litigant,
+ * and allow the user to confirm selection of this litigant
+ * for use in a case.
+ */
 import { ref, onMounted, reactive } from 'vue'
 import { type Litigant } from '@/types/list-litigants-api'
 import InputCheckbox from '@/components/inputs/InputCheckbox.vue'
