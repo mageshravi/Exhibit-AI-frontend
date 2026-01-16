@@ -10,6 +10,7 @@ import LitigantSection from '@/components/case/LitigantSection.vue'
 interface CaseViewState {
   case: RetrieveCaseResponse | null
   descriptionExpanded: boolean
+  showUploadFiles: boolean
 }
 
 const route = useRoute()
@@ -17,6 +18,7 @@ const route = useRoute()
 const state = reactive(<CaseViewState>{
   case: null,
   descriptionExpanded: false,
+  showUploadFiles: false,
 })
 
 const caseTitle = computed(() => state.case?.title || 'Loading...')
@@ -67,6 +69,10 @@ function toggleDescription() {
   state.descriptionExpanded = !state.descriptionExpanded
 }
 
+function handleExhibitCountChange(count: number) {
+  state.showUploadFiles = !count
+}
+
 function handleUploadComplete() {
   const result = confirm('Files uploaded successfully. Do you want to refresh the page?')
   if (result) {
@@ -77,7 +83,11 @@ function handleUploadComplete() {
 
 <template>
   <div class="v-case-page">
-    <CaseHeader class="v-case-page__header" :title="caseTitle" />
+    <CaseHeader
+      class="v-case-page__header"
+      :title="caseTitle"
+      @exhibits:count-updated="handleExhibitCountChange"
+    />
     <div class="v-case-page__overview">
       <div>
         <h3>Case number</h3>
@@ -101,6 +111,12 @@ function handleUploadComplete() {
         {{ descBtnLabel }}
       </button>
     </div>
+    <UploadFiles
+      v-if="state.showUploadFiles"
+      class="v-case-page__exhibits"
+      :case-uuid="route.params.caseUuid as string"
+      @upload:complete="handleUploadComplete"
+    />
     <div class="v-case-page__litigants">
       <LitigantSection
         v-if="plaintiffs.length"
