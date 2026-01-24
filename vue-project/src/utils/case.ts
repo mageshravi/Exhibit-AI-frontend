@@ -83,6 +83,22 @@ function searchCases(query: string): Promise<AxiosResponse<ListCasesResponse>> {
   return axios.get(url)
 }
 
+interface EditCasePayload {
+  title?: string
+  description?: string
+  case_number?: string
+  case_litigants_data?: CaseLitigant[]
+}
+
+function updateCase(payload: EditCasePayload, caseUuid: string): Promise<AxiosResponse<Case>> {
+  return axios.patch(`/api/poc/cases/${caseUuid}/`, payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken'),
+    },
+  })
+}
+
 export {
   getCaseDetails,
   getCaseDetails_v2,
@@ -92,4 +108,6 @@ export {
   type CreateCasePayload,
   createCase,
   searchCases,
+  type EditCasePayload,
+  updateCase,
 }
