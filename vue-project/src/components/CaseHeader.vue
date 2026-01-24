@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getCaseExhibits_v2 } from '@/utils/case'
 
@@ -7,6 +7,7 @@ const route = useRoute()
 
 const props = defineProps<{
   title: string
+  editMode?: boolean
 }>()
 
 interface CaseHeaderState {
@@ -15,6 +16,10 @@ interface CaseHeaderState {
 
 const state = reactive<CaseHeaderState>({
   exhibitsCount: 1, // to avoid layout jumping
+})
+
+const displayTitle = computed(() => {
+  return props.editMode ? `Edit Case` : props.title
 })
 
 const emits = defineEmits<{
@@ -44,9 +49,17 @@ onMounted(() => {
       <span class="m-breadcrumbs__item">
         <router-link class="m-breadcrumbs__link" :to="{ name: 'Home' }">Cases</router-link>
       </span>
+      <span class="m-breadcrumbs__item" v-if="props.editMode">
+        <router-link
+          class="m-breadcrumbs__link"
+          :to="{ name: 'CaseDetail', params: { caseUuid: route.params.caseUuid } }"
+        >
+          {{ props.title }}
+        </router-link>
+      </span>
     </nav>
-    <h1 class="c-case-header__title">{{ props.title }}</h1>
-    <nav class="m-tabs" v-if="state.exhibitsCount">
+    <h1 class="c-case-header__title">{{ displayTitle }}</h1>
+    <nav class="m-tabs" v-if="!props.editMode && state.exhibitsCount">
       <router-link
         class="m-tabs__tab"
         :to="{ name: 'CaseDetail', params: { caseUuid: $route.params.caseUuid } }"
@@ -101,8 +114,11 @@ onMounted(() => {
 
 .c-case-header {
   &__title {
-    margin-block-start: 0;
-    margin-block-end: 13px;
+    margin-block: 0;
+  }
+
+  &__title + .m-tabs {
+    margin-block-start: 13px;
   }
 }
 </style>
