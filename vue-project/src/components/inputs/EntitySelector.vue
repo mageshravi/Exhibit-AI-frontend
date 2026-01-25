@@ -55,6 +55,7 @@ watch(
         :key="id"
         :label="entity.label"
         :value="id"
+        :is-locked="entity.isLocked"
         @remove="removeEntity"
       />
     </div>
