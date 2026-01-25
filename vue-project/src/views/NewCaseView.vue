@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { toRaw, reactive, computed } from 'vue'
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import AddLitigant from '@/components/litigant/AddLitigant.vue'
 import InputText from '@/components/inputs/InputText.vue'
 import InputTextarea from '@/components/inputs/InputTextarea.vue'
 import EntitySelector from '@/components/inputs/EntitySelector.vue'
-import type { Litigant } from '@/types/list-litigants-api'
 import type { Entity } from '@/components/inputs/EntityTag.vue'
 import type { CreateCasePayload } from '@/utils/case'
 import { createCase } from '@/utils/case'
-import { useRouter } from 'vue-router'
+import { useLitigantEntities } from '@/composables/useLitigantEntities'
+import { useAddLitigantModal } from '@/composables/useAddLitigantModal'
 
 const router = useRouter()
 
@@ -34,114 +35,23 @@ const state = reactive<NewCaseState>({
   addLitigantModalOpen: false,
 })
 
-const clientRole = computed((): 'plaintiff' | 'defendant' | null => {
-  const roles = new Set<string>()
-  state.litigants.forEach((litigant) => {
-    if (litigant.data?.get('isOurClient') === 'true') {
-      roles.add(litigant.data?.get('role') || '')
-    }
-  })
+const {
+  plaintiffEntities,
+  defendantEntities,
+  witnessEntities,
+  clientRole,
+  updatePlaintiffs,
+  updateDefendants,
+  updateWitnesses,
+} = useLitigantEntities(state)
 
-  return Array.from(roles)[0] as 'plaintiff' | 'defendant' | null
-})
-
-const showPlaintiffModal = () => {
-  state.addLitigantModalOpen = 'plaintiff'
-}
-
-const showDefendantModal = () => {
-  state.addLitigantModalOpen = 'defendant'
-}
-
-const showWitnessModal = () => {
-  state.addLitigantModalOpen = 'witness'
-}
-
-const hideLitigantModal = () => {
-  state.addLitigantModalOpen = false
-}
-
-const updatePlaintiffs = (plaintiffs: Map<string, Entity>) => {
-  /* replace all plaintiffs */
-  state.litigants.forEach((litigant, key) => {
-    if (litigant.data?.get('role') === 'plaintiff') {
-      state.litigants.delete(key)
-    }
-  })
-  state.litigants = new Map([...state.litigants, ...toRaw(plaintiffs)])
-}
-
-const updateDefendants = (defendants: Map<string, Entity>) => {
-  /* replace all defendants */
-  state.litigants.forEach((litigant, key) => {
-    if (litigant.data?.get('role') === 'defendant') {
-      state.litigants.delete(key)
-    }
-  })
-  state.litigants = new Map([...state.litigants, ...toRaw(defendants)])
-}
-
-const updateWitnesses = (witnesses: Map<string, Entity>) => {
-  /* replace all witnesses */
-  state.litigants.forEach((litigant, key) => {
-    if (litigant.data?.get('role') === 'witness') {
-      state.litigants.delete(key)
-    }
-  })
-  state.litigants = new Map([...state.litigants, ...toRaw(witnesses)])
-}
-
-const handleNewLitigant = (litigant: Litigant, isOurClient: boolean) => {
-  const litigantEntity: Entity = {
-    value: litigant.id.toString(),
-    label: litigant.name,
-  }
-
-  const _data = new Map<string, string>()
-  _data.set('isOurClient', isOurClient.toString())
-
-  if (state.addLitigantModalOpen === 'plaintiff') {
-    _data.set('role', 'plaintiff')
-    litigantEntity.data = _data
-    state.litigants.set(litigant.id.toString(), litigantEntity)
-  } else if (state.addLitigantModalOpen === 'defendant') {
-    _data.set('role', 'defendant')
-    litigantEntity.data = _data
-    state.litigants.set(litigant.id.toString(), litigantEntity)
-  } else if (state.addLitigantModalOpen === 'witness') {
-    _data.set('role', 'witness')
-    litigantEntity.data = _data
-    state.litigants.set(litigant.id.toString(), litigantEntity)
-  }
-  hideLitigantModal()
-}
-
-const plaintiffEntities = computed(() => {
-  /* get all litigants with role 'plaintiff' */
-  return new Map(
-    Array.from(state.litigants.entries()).filter(
-      ([, litigant]) => litigant.data?.get('role') === 'plaintiff',
-    ),
-  )
-})
-
-const defendantEntities = computed(() => {
-  /* get all litigants with role 'defendant' */
-  return new Map(
-    Array.from(state.litigants.entries()).filter(
-      ([, litigant]) => litigant.data?.get('role') === 'defendant',
-    ),
-  )
-})
-
-const witnessEntities = computed(() => {
-  /* get all litigants with role 'witness' */
-  return new Map(
-    Array.from(state.litigants.entries()).filter(
-      ([, litigant]) => litigant.data?.get('role') === 'witness',
-    ),
-  )
-})
+const {
+  showPlaintiffModal,
+  showDefendantModal,
+  showWitnessModal,
+  hideLitigantModal,
+  handleNewLitigant,
+} = useAddLitigantModal(state)
 
 const _validateFormInputs = (): APIError => {
   const errors: APIError = {}

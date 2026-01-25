@@ -1,28 +1,34 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, reactive } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import CaseHeader from '@/components/CaseHeader.vue'
 import InputText from '@/components/inputs/InputText.vue'
 import InputTextarea from '@/components/inputs/InputTextarea.vue'
 import EntitySelector from '@/components/inputs/EntitySelector.vue'
 import type { Entity } from '@/components/inputs/EntityTag.vue'
+import AddLitigant from '@/components/litigant/AddLitigant.vue'
 import type { CaseLitigant } from '@/types/retrieve-case-api'
 import { getCaseDetails_v2, type EditCasePayload, updateCase } from '@/utils/case'
+import { useLitigantEntities } from '@/composables/useLitigantEntities'
+import { useAddLitigantModal } from '@/composables/useAddLitigantModal'
 
 const route = useRoute()
+const router = useRouter()
 
 interface EditCaseState {
   caseTitle: string
   caseDescription: string
+  caseNumber: string | null
   litigants: Map<string, Entity>
-  caseNumber?: string
+  addLitigantModalOpen: 'plaintiff' | 'defendant' | 'witness' | false
 }
 
 const state = reactive<EditCaseState>({
   caseTitle: '',
   caseDescription: '',
   litigants: new Map<string, Entity>(),
-  caseNumber: '',
+  caseNumber: null,
+  addLitigantModalOpen: false,
 })
 
 const fetchedValues = {
@@ -32,27 +38,16 @@ const fetchedValues = {
   caseNumber: '',
 }
 
-const plaintiffEntities = computed(() => {
-  return new Map(
-    Array.from(state.litigants).filter(([, entity]) => entity.data?.get('role') === 'plaintiff'),
-  )
-})
+const { plaintiffEntities, defendantEntities, witnessEntities, clientRole } =
+  useLitigantEntities(state)
 
-const defendantEntities = computed(() => {
-  return new Map(
-    Array.from(state.litigants).filter(([, entity]) => entity.data?.get('role') === 'defendant'),
-  )
-})
-
-const witnessEntities = computed(() => {
-  return new Map(
-    Array.from(state.litigants).filter(([, entity]) => entity.data?.get('role') === 'witness'),
-  )
-})
-
-const restrictDeletion = (entity: Entity) => {
-  alert(`Cannot remove ${entity.label}.\n\nLitigants cannot be removed once added to a case.`)
-}
+const {
+  showPlaintiffModal,
+  showDefendantModal,
+  showWitnessModal,
+  hideLitigantModal,
+  handleNewLitigant,
+} = useAddLitigantModal(state)
 
 /**
  * Maintains a copy of fetched values to compare against on submit.
@@ -119,7 +114,7 @@ function submitForm() {
   updateCase(payload, caseUuid)
     .then(() => {
       alert('Case updated successfully.')
-      updateFetchedValues()
+      router.push({ name: 'CaseDetail', params: { caseUuid } })
     })
     .catch((error) => {
       alert('Error updating case. Please try again later.')
@@ -148,6 +143,7 @@ onMounted(() => {
         label: caseLitigant.litigant.name,
         value: caseLitigant.litigant.id.toString(),
         data: _data,
+        isLocked: true,
       })
     })
 
@@ -166,24 +162,21 @@ onMounted(() => {
       <EntitySelector
         add-btn-label="Add Plaintiff"
         :entities="plaintiffEntities"
-        :add-entity-callback="() => {}"
-        :remove-entity-callback="restrictDeletion"
+        :add-entity-callback="showPlaintiffModal"
       >
         Plaintiffs
       </EntitySelector>
       <EntitySelector
         add-btn-label="Add Defendant"
         :entities="defendantEntities"
-        :add-entity-callback="() => {}"
-        :remove-entity-callback="restrictDeletion"
+        :add-entity-callback="showDefendantModal"
       >
         Defendants
       </EntitySelector>
       <EntitySelector
         add-btn-label="Add Witness"
         :entities="witnessEntities"
-        :add-entity-callback="() => {}"
-        :remove-entity-callback="restrictDeletion"
+        :add-entity-callback="showWitnessModal"
       >
         Witnesses
       </EntitySelector>
@@ -191,6 +184,16 @@ onMounted(() => {
         <button type="submit" class="m-btn m-btn--primary">Save Changes</button>
       </div>
     </form>
+    <transition name="fade-up">
+      <AddLitigant
+        v-if="state.addLitigantModalOpen"
+        :litigant-type="state.addLitigantModalOpen"
+        :our-client-role="clientRole"
+        @confirm="handleNewLitigant"
+        @modal:close="hideLitigantModal"
+        class="v-edit-case__add-litigant-modal"
+      />
+    </transition>
   </div>
 </template>
 
@@ -219,5 +222,24 @@ onMounted(() => {
     flex-flow: column;
     row-gap: 20px;
   }
+
+  &__add-litigant-modal {
+    z-index: 1000;
+    position: absolute;
+    inset: 0;
+    background-color: white;
+  }
+}
+
+.fade-up-enter-active,
+.fade-up-leave-active {
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out;
+}
+.fade-up-enter-from,
+.fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(40px);
 }
 </style>
