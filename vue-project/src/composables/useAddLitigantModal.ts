@@ -27,6 +27,16 @@ export function useAddLitigantModal(state: CaseState) {
   }
 
   const handleNewLitigant = (litigant: Litigant, isOurClient: boolean) => {
+    const existingEntity = state.litigants.get(litigant.id.toString())
+    if (existingEntity && existingEntity.isLocked) {
+      // cannot modify locked, existing entity
+      alert(
+        `${existingEntity.label} is currently added as a ${existingEntity.data?.get('role')} and cannot be modified.`,
+      )
+      hideLitigantModal()
+      return
+    }
+
     const litigantEntity: Entity = {
       value: litigant.id.toString(),
       label: litigant.name,

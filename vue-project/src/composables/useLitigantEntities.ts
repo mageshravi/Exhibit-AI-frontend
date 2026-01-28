@@ -39,7 +39,7 @@ export function useLitigantEntities(state: CaseState) {
   })
 
   const updatePlaintiffs = (plaintiffs: Map<string, Entity>) => {
-    /* replace all plaintiffs */
+    // A plaintiff likely removed. Replace all plaintiffs.
     state.litigants.forEach((litigant, key) => {
       if (litigant.data?.get('role') === 'plaintiff') {
         state.litigants.delete(key)
@@ -49,7 +49,7 @@ export function useLitigantEntities(state: CaseState) {
   }
 
   const updateDefendants = (defendants: Map<string, Entity>) => {
-    /* replace all defendants */
+    // A defendant likely removed. Replace all defendants.
     state.litigants.forEach((litigant, key) => {
       if (litigant.data?.get('role') === 'defendant') {
         state.litigants.delete(key)
@@ -59,7 +59,7 @@ export function useLitigantEntities(state: CaseState) {
   }
 
   const updateWitnesses = (witnesses: Map<string, Entity>) => {
-    /* replace all witnesses */
+    // A witness likely removed. Replace all witnesses.
     state.litigants.forEach((litigant, key) => {
       if (litigant.data?.get('role') === 'witness') {
         state.litigants.delete(key)
