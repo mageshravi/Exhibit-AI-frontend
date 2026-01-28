@@ -38,8 +38,15 @@ const fetchedValues = {
   caseNumber: '',
 }
 
-const { plaintiffEntities, defendantEntities, witnessEntities, clientRole } =
-  useLitigantEntities(state)
+const {
+  plaintiffEntities,
+  defendantEntities,
+  witnessEntities,
+  clientRole,
+  updatePlaintiffs,
+  updateDefendants,
+  updateWitnesses,
+} = useLitigantEntities(state)
 
 const {
   showPlaintiffModal,
@@ -163,6 +170,7 @@ onMounted(() => {
         add-btn-label="Add Plaintiff"
         :entities="plaintiffEntities"
         :add-entity-callback="showPlaintiffModal"
+        @update:entities="updatePlaintiffs"
       >
         Plaintiffs
       </EntitySelector>
@@ -170,6 +178,7 @@ onMounted(() => {
         add-btn-label="Add Defendant"
         :entities="defendantEntities"
         :add-entity-callback="showDefendantModal"
+        @update:entities="updateDefendants"
       >
         Defendants
       </EntitySelector>
@@ -177,6 +186,7 @@ onMounted(() => {
         add-btn-label="Add Witness"
         :entities="witnessEntities"
         :add-entity-callback="showWitnessModal"
+        @update:entities="updateWitnesses"
       >
         Witnesses
       </EntitySelector>
