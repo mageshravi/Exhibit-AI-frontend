@@ -121,7 +121,12 @@ const create = () => {
 <template>
   <div class="v-new-case">
     <header class="v-new-case__header">
-      <h1>New Case</h1>
+      <nav class="m-breadcrumbs">
+        <span class="m-breadcrumbs__item">
+          <router-link class="m-breadcrumbs__link" :to="{ name: 'Home' }">Cases</router-link>
+        </span>
+      </nav>
+      <h1 class="v-new-case__title">New Case</h1>
     </header>
     <form class="v-new-case__form" @submit.prevent="create">
       <InputText
@@ -191,15 +196,22 @@ const create = () => {
   padding-block-end: 2rem;
   min-height: 100vh;
   grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: auto 1fr;
   column-gap: 20px;
 
   &__header {
     padding-block: 32px 21px;
     grid-column: 3 / span 4;
+    grid-row: 1;
+  }
+
+  &__title {
+    margin-block: 0;
   }
 
   &__form {
     grid-column: 3 / span 4;
+    grid-row: 2;
     display: flex;
     flex-flow: column;
     row-gap: 1rem;
