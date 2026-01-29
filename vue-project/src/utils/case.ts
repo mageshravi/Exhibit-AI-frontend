@@ -1,8 +1,7 @@
 import axios, { type AxiosResponse } from 'axios'
 import Cookies from 'js-cookie'
-import type { Case } from '@/types/chat-types'
 import type { ListExhibitsResponse } from '@/types/list-exhibits-api'
-import type { ListCasesResponse } from '@/types/list-cases-api'
+import type { Case, ListCasesResponse } from '@/types/list-cases-api'
 import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
 
 function getCaseDetails(caseUuid: string): Promise<RetrieveCaseResponse | null> {

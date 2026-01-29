@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import { reactive, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import CaseHeader from '@/components/CaseHeader.vue'
 import UploadFiles from '@/components/exhibits/UploadFiles.vue'
 import ExhibitItem from '@/components/exhibits/ExhibitItem.vue'
 import EditExhibitModal from '@/components/exhibits/EditExhibitModal.vue'
 import ViewExhibitModal from '@/components/exhibits/ViewExhibitModal.vue'
 import ThePagination from '@/components/ThePagination.vue'
-import { reactive, computed, onMounted, watch } from 'vue'
-import type { Case } from '@/types/chat-types'
-import type { Exhibit, ListExhibitsResponse } from '@/types/list-exhibits-api'
 import { getCaseDetails_v2, getCaseExhibits_v2 } from '@/utils/case'
-import { useRoute } from 'vue-router'
+import type { Exhibit, ListExhibitsResponse } from '@/types/list-exhibits-api'
+import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
 
 interface ExhibitsState {
-  case: Case | null
+  case: RetrieveCaseResponse | null
   page: number
   listExhibitsResponse: ListExhibitsResponse | null
   editExhibit: Exhibit | null

@@ -1,13 +1,3 @@
-interface Case {
-  id: number
-  title: string
-  description: string
-  uuid: string
-  case_number: string
-  created_at: string
-  updated_at: string
-}
-
 interface ChatThread {
   id: number
   title: string
@@ -26,4 +16,4 @@ interface ChatMessage {
   updated_at: string
 }
 
-export type { Case, ChatThread, ChatMessage }
+export type { ChatThread, ChatMessage }
