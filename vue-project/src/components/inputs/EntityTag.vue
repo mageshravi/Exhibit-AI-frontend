@@ -3,6 +3,7 @@ export interface Entity {
   label: string
   value: string
   data?: Map<string, string>
+  isLocked?: boolean
 }
 
 const props = defineProps<Entity>()
@@ -14,6 +15,10 @@ const emits = defineEmits<{
 <template>
   <span class="m-entity-tag" :data-value="props.value">
     {{ props.label }}
-    <span class="m-entity-tag__icon-x" @click="emits('remove', props.value)"></span>
+    <span
+      v-if="!props.isLocked"
+      class="m-entity-tag__icon-x"
+      @click="emits('remove', props.value)"
+    ></span>
   </span>
 </template>

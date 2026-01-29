@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 // make props with default values for InputText component
 const props = defineProps<{
   label: string
@@ -10,6 +12,10 @@ const props = defineProps<{
   hasError?: boolean
 }>()
 
+const htmlId = computed(() => {
+  return props.label.toLowerCase().replace(/\s+/g, '-') + '-id'
+})
+
 const emits = defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
@@ -17,11 +23,11 @@ const emits = defineEmits<{
 
 <template>
   <div class="m-textbox" :class="{ 'has-error': props.errorText && props.errorText.length > 0 }">
-    <label for="textbox-id" class="m-textbox__label">{{ props.label }}</label>
+    <label :for="htmlId" class="m-textbox__label">{{ props.label }}</label>
     <span v-if="props.errorText" class="m-textbox__error-text">{{ props.errorText }}</span>
     <input
       type="text"
-      id="textbox-id"
+      :id="htmlId"
       class="m-textbox__input"
       :placeholder="props.placeholder ?? ''"
       :required="props.required"

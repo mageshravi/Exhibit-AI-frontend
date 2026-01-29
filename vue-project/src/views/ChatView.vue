@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { computed, onMounted, reactive } from 'vue'
+import { useRoute } from 'vue-router'
 import ChatSidebar from '@/components/chat/ChatSidebar.vue'
 import ChatThread from '@/components/chat/ChatThread.vue'
 import CaseHeader from '@/components/CaseHeader.vue'
 import { getCaseDetails_v2 } from '@/utils/case'
-import { computed, onMounted, reactive } from 'vue'
-import { useRoute } from 'vue-router'
-import type { Case } from '@/types/chat-types'
+import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
 
 interface ChatViewState {
-  case: Case | null
+  case: RetrieveCaseResponse | null
 }
 
 const state = reactive(<ChatViewState>{

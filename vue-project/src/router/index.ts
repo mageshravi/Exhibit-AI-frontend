@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('../views/CaseView.vue'),
     },
     {
+      path: '/case/:caseUuid/edit',
+      name: 'EditCase',
+      component: () => import('../views/EditCaseView.vue'),
+    },
+    {
       path: '/case/:caseUuid/exhibits',
       name: 'Exhibits',
       component: () => import('../views/ExhibitsView.vue'),

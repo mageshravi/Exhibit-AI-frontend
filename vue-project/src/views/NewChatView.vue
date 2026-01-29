@@ -6,11 +6,11 @@ import { useRoute } from 'vue-router'
 import { onMounted, reactive } from 'vue'
 import router from '@/router'
 import { getCaseDetails_v2 } from '@/utils/case'
-import type { Case } from '@/types/chat-types'
 import { sendMessage } from '@/utils/chat'
+import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
 
 interface NewChatState {
-  case: Case | null
+  case: RetrieveCaseResponse | null
   threadUuid: string
   sendingMessage: boolean
   message: string
@@ -44,7 +44,7 @@ function createNewChat() {
     message = message.slice(0, 251) + '…'
   }
 
-  if (!caseUuid || !csrfToken || !state.case?.id || !state.message.trim()) {
+  if (!caseUuid || !csrfToken || !state.case?.uuid || !state.message.trim()) {
     return
   }
 
@@ -56,7 +56,7 @@ function createNewChat() {
       'Content-Type': 'application/json',
       'X-CSRFToken': csrfToken,
     },
-    body: JSON.stringify({ title: message, case: state.case.id }),
+    body: JSON.stringify({ title: message }),
   })
     .then((response) => {
       if (!response.ok) {

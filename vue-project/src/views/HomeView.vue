@@ -81,6 +81,7 @@ watch(
         type="button"
         class="m-btn m-btn--secondary v-home__new-case-btn"
         @click="$router.push({ name: 'NewCase' })"
+        tabindex="-1"
       >
         New Case
       </button>

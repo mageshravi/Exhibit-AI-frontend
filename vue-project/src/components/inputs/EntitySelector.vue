@@ -8,6 +8,7 @@ const props = defineProps<{
   addEntityCallback: () => void
   entities?: Map<string, Entity>
   errorText?: string
+  removeEntityCallback?: (value: Entity) => void
 }>()
 
 const state = reactive<{
@@ -21,8 +22,16 @@ const emits = defineEmits<{
 }>()
 
 const removeEntity = (value: string) => {
-  state.entities.delete(value)
-  emits('update:entities', state.entities)
+  if (props.removeEntityCallback) {
+    /* use callback instead of modifying entities directly */
+    const entity = state.entities.get(value)
+    if (entity) {
+      props.removeEntityCallback(entity)
+    }
+  } else {
+    state.entities.delete(value)
+    emits('update:entities', state.entities)
+  }
 }
 
 watch(
@@ -46,6 +55,7 @@ watch(
         :key="id"
         :label="entity.label"
         :value="id"
+        :is-locked="entity.isLocked"
         @remove="removeEntity"
       />
     </div>

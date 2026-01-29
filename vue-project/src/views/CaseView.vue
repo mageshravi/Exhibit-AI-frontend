@@ -90,6 +90,11 @@ function handleUploadComplete() {
     />
     <div class="v-case-page__overview">
       <div>
+        <router-link
+          :to="{ name: 'EditCase', params: { caseUuid: route.params.caseUuid } }"
+          class="m-btn m-btn--secondary m-btn--compact m-btn--link"
+          >Edit Case</router-link
+        >
         <h3>Case number</h3>
         <div v-if="state.case?.case_number">{{ state.case.case_number }}</div>
         <em v-else>Not set</em>
@@ -160,6 +165,7 @@ function handleUploadComplete() {
   &__header {
     padding-block: 32px 21px;
     grid-column: 3 / span 4;
+    grid-row: 1;
   }
 
   &__overview {
@@ -171,6 +177,7 @@ function handleUploadComplete() {
     margin-bottom: 8px;
     display: -webkit-box;
     overflow: hidden;
+    white-space: pre-line; /* converts newline characters to line breaks */
     text-overflow: ellipsis;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 4;
