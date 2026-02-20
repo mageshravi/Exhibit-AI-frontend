@@ -1,13 +1,31 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { Event } from '@/types/list-events-api'
+const props = defineProps<{
+  event: Event
+}>()
+
+const formattedDate = computed(() => {
+  const date = new Date(props.event.event_date)
+  return date.toLocaleString('en-US', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+})
+</script>
+
 <template>
   <div class="c-timeline-event">
-    <span class="c-timeline-event__date">10 Mar 2023&nbsp;&nbsp;01:52 PM</span>
+    <span class="c-timeline-event__date">{{ formattedDate }}</span>
     <p class="c-timeline-event__title">
-      <strong>Proposal for building an Order Tracking System - Solisar & Co.</strong>
+      <strong>{{ props.event.display_title }}</strong>
     </p>
     <p class="c-timeline-event__description">
-      Magesh is following up on a previous conversation and has attached a proposal document for
-      building an Order Tracking System for Solisar & Co. The proposal outlines the project scope,
-      timeline, and deliverables.
+      {{ props.event.display_description }}<br />
+      Source: <em>{{ props.event.source_description }}</em>
     </p>
   </div>
 </template>
@@ -23,6 +41,10 @@
   }
 
   &__title {
+    position: relative;
+    margin-block: 4px;
+    color: var(--heading-txt);
+
     &::before {
       content: '';
       position: absolute;
@@ -30,14 +52,10 @@
       left: -28px;
       width: 6px;
       height: 6px;
-      border: 2px solid;
+      border: 2px solid var(--timeline-track);
       background-color: var(--body-bg);
       transform: rotate(45deg);
     }
-
-    position: relative;
-    margin-block: 4px;
-    color: var(--heading-txt);
   }
   &__description {
     margin-block-start: 0;
