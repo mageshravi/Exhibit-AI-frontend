@@ -44,9 +44,14 @@ const router = createRouter({
       component: () => import('../views/ChatView.vue'),
     },
     {
-      path: '/case/:caseUuid/timeline',
-      name: 'Timeline',
+      path: '/case/:caseUuid/timelines',
+      name: 'Timelines',
       component: () => import('../views/TimelineView.vue'),
+    },
+    {
+      path: '/case/:caseUuid/timelines/new',
+      name: 'NewTimeline',
+      component: () => import('../views/NewTimelineView.vue'),
     },
   ],
 })
