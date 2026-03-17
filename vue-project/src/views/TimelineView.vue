@@ -3,6 +3,7 @@ import { reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import CaseHeader from '@/components/CaseHeader.vue'
 import TimelineEvent from '@/components/timeline/TimelineEvent.vue'
+import TimelineSidebar from '@/components/timeline/TimelineSidebar.vue'
 import { getCaseDetails_v2 } from '@/utils/case'
 import { getEvents } from '@/utils/event'
 import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
@@ -79,6 +80,7 @@ function loadMoreEvents() {
 <template>
   <div class="v-timeline">
     <CaseHeader class="v-timeline__header" :title="caseTitle" />
+    <TimelineSidebar class="v-timeline__sidebar" />
     <div class="v-timeline__main">
       <h2>Timeline</h2>
       <div class="v-timeline__year-wrapper" v-for="(months, year) in groupedEvents" :key="year">
@@ -118,6 +120,11 @@ function loadMoreEvents() {
     padding-block: 32px 21px;
     grid-column: 3 / span 4;
     grid-row: 1;
+  }
+
+  &__sidebar {
+    grid-column: 1 / span 2;
+    grid-row: 2;
   }
 
   &__main {
