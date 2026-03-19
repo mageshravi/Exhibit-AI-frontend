@@ -17,7 +17,15 @@
     "activityBar.foreground": "#fff",
     "activityBar.background": "#064624",
     "titleBar.activeBackground": "#098141",
-    "titleBar.activeForeground": "#FAF9FE"
+    "titleBar.activeForeground": "#FAF9FE",
+    "titleBar.inactiveBackground": "#05351B",
+    "titleBar.inactiveForeground": "#EFFEF6",
+    "statusBar.background": "#05351B",
+    "statusBar.foreground": "#EFFEF6",
+    "statusBar.debuggingBackground": "#05351B",
+    "statusBar.debuggingForeground": "#EFFEF6",
+    "statusBar.noFolderBackground": "#05351B",
+    "statusBar.noFolderForeground": "#EFFEF6"
   },
   "[vue]": {
     "editor.tabSize": 2
