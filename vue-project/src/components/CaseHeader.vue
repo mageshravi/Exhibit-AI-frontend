@@ -75,6 +75,11 @@ onMounted(() => {
         :to="{ name: 'NewChat', params: { caseUuid: $route.params.caseUuid } }"
         >Chats</router-link
       >
+      <router-link
+        class="m-tabs__tab"
+        :to="{ name: 'Timelines', params: { caseUuid: $route.params.caseUuid } }"
+        >Timelines</router-link
+      >
     </nav>
   </header>
 </template>
