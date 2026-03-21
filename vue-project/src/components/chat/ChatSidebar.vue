@@ -65,7 +65,7 @@ onMounted(() => {
     text-overflow: ellipsis;
     text-decoration: none;
     color: var(--body-txt--secondary);
-    border-radius: 0 6px 6px 0;
+    border-radius: 6px;
 
     &:hover {
       background-color: var(--panel-bg);

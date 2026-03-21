@@ -109,8 +109,12 @@ onMounted(() => {
 
 .m-tabs {
   &__tab {
-    &[aria-selected='true'],
     &.router-link-active {
+      border-color: var(--theme-tint);
+    }
+
+    &[aria-selected='true'],
+    &.router-link-exact-active {
       color: white;
       background-color: var(--theme-tint);
     }

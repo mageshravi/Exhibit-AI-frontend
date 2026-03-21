@@ -7,7 +7,7 @@ const route = useRoute()
 
 function goToNewTimeline() {
   router.push({
-    name: 'NewChat',
+    name: 'NewTimeline',
     params: { caseUuid: route.params.caseUuid },
   })
 }

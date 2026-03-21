@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Event } from '@/types/list-events-api'
+import type { TimelineEvent } from '@/types/list-timeline-events-api'
 const props = defineProps<{
-  event: Event
+  event: TimelineEvent
 }>()
 
 const formattedDate = computed(() => {
@@ -21,11 +21,10 @@ const formattedDate = computed(() => {
   <div class="c-timeline-event">
     <span class="c-timeline-event__date">{{ formattedDate }}</span>
     <p class="c-timeline-event__title">
-      <strong>{{ props.event.display_title }}</strong>
+      <strong>{{ props.event.title }}</strong>
     </p>
     <p class="c-timeline-event__description">
-      {{ props.event.display_description }}<br />
-      Source: <em>{{ props.event.source_description }}</em>
+      {{ props.event.description }}
     </p>
   </div>
 </template>
