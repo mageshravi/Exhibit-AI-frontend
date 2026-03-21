@@ -45,13 +45,24 @@ const router = createRouter({
     },
     {
       path: '/case/:caseUuid/timelines',
-      name: 'Timelines',
       component: () => import('../views/TimelineView.vue'),
-    },
-    {
-      path: '/case/:caseUuid/timelines/new',
-      name: 'NewTimeline',
-      component: () => import('../views/NewTimelineView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'Timelines',
+          component: () => import('../views/NewTimelineView.vue'),
+        },
+        {
+          path: 'new',
+          name: 'NewTimeline',
+          component: () => import('../views/NewTimelineView.vue'),
+        },
+        {
+          path: ':timelineId',
+          name: 'TimelineDetail',
+          component: () => import('../views/TimelineDetailView.vue'),
+        },
+      ],
     },
   ],
 })
