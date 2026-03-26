@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from 'axios'
+import Cookies from 'js-cookie'
 import type { Timeline } from '@/types/retrieve-timeline-api'
 import type { ListTimelinesResponse } from '@/types/list-timelines-api'
 import type { ListTimelineEventsResponse } from '@/types/list-timeline-events-api'
@@ -13,6 +14,21 @@ function getTimelineDetails(timelineId: number): Promise<AxiosResponse<Timeline>
   return axios.get(url)
 }
 
+interface CreateTimelineRequest {
+  case: string
+  name: string
+  exhibits?: Array<number>
+}
+
+function createTimeline(requestData: CreateTimelineRequest): Promise<AxiosResponse<Timeline>> {
+  const url = `/api/events/timelines/`
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': Cookies.get('csrftoken'),
+  }
+  return axios.post(url, requestData, { headers })
+}
+
 function getTimelineEvents(
   timelineId: number,
   pageNumber: number = 1,
@@ -21,4 +37,10 @@ function getTimelineEvents(
   return axios.get(url)
 }
 
-export { getTimelines, getTimelineDetails, getTimelineEvents }
+export {
+  type CreateTimelineRequest,
+  getTimelines,
+  getTimelineDetails,
+  getTimelineEvents,
+  createTimeline,
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { reactive, computed, onMounted } from 'vue'
+import { reactive, computed, onMounted, watch } from 'vue'
 
 import TimelineEvent from '@/components/timeline/TimelineEvent.vue'
 import { getCaseDetails_v2 } from '@/utils/case'
@@ -67,10 +67,16 @@ onMounted(() => {
     state.case = response.data
   })
 
+  loadTimeline()
+})
+
+function loadTimeline(loadEvents = true) {
   const timelineId = parseInt(route.params.timelineId as string, 10)
 
   getTimelineDetails(timelineId).then((response) => {
     state.timeline = response.data
+
+    if (!loadEvents) return
 
     if (state.timeline.event_extraction_status === 'completed') {
       getTimelineEvents(timelineId).then((response) => {
@@ -79,7 +85,7 @@ onMounted(() => {
       })
     }
   })
-})
+}
 
 function loadMoreEvents() {
   if (!state.timelineEventsResponse?.next) return
@@ -90,6 +96,16 @@ function loadMoreEvents() {
     state.events = [...(state.events || []), ...response.data.results.reverse()]
   })
 }
+
+watch(
+  () => route.params.timelineId,
+  () => {
+    state.timeline = null
+    state.timelineEventsResponse = null
+    state.events = null
+    loadTimeline()
+  },
+)
 </script>
 
 <template>
