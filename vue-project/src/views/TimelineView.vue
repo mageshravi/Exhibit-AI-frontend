@@ -3,6 +3,7 @@ import { reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import CaseHeader from '@/components/CaseHeader.vue'
 import TimelineSidebar from '@/components/timeline/TimelineSidebar.vue'
+import ExhibitList from '@/components/timeline/ExhibitList.vue'
 import { getCaseDetails_v2 } from '@/utils/case'
 import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
 import type {
@@ -26,6 +27,7 @@ const state = reactive<TimelineViewState>({
 
 const caseUuid = route.params.caseUuid as string
 const caseTitle = computed(() => state.case?.title || 'Loading...')
+const timelineId = computed(() => route.params.timelineId as string)
 
 onMounted(async () => {
   const caseUuid = route.params.caseUuid as string
@@ -40,6 +42,11 @@ onMounted(async () => {
     <CaseHeader class="v-timeline__header" :title="caseTitle" />
     <TimelineSidebar class="v-timeline__sidebar" :case-uuid="caseUuid" />
     <RouterView />
+    <ExhibitList
+      v-if="timelineId"
+      class="v-timeline__extraction-status"
+      :timeline-id="timelineId"
+    />
   </div>
 </template>
 
@@ -66,6 +73,12 @@ onMounted(async () => {
   &__sidebar {
     grid-column: 1 / span 2;
     grid-row: 2;
+  }
+
+  &__extraction-status {
+    grid-column: 7 / span 2;
+    grid-row: 2;
+    align-self: start;
   }
 }
 </style>
