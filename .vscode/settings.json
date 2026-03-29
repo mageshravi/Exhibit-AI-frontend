@@ -19,13 +19,13 @@
     "titleBar.activeBackground": "#098141",
     "titleBar.activeForeground": "#FAF9FE",
     "titleBar.inactiveBackground": "#05351B",
-    "titleBar.inactiveForeground": "#EFFEF6",
-    "statusBar.background": "#05351B",
-    "statusBar.foreground": "#EFFEF6",
-    "statusBar.debuggingBackground": "#05351B",
-    "statusBar.debuggingForeground": "#EFFEF6",
-    "statusBar.noFolderBackground": "#05351B",
-    "statusBar.noFolderForeground": "#EFFEF6"
+    "titleBar.inactiveForeground": "#031E10",
+    "statusBar.background": "#064825",
+    "statusBar.foreground": "#EEFEF5",
+    "statusBar.debuggingBackground": "#064825",
+    "statusBar.debuggingForeground": "#EEFEF5",
+    "statusBar.noFolderBackground": "#064825",
+    "statusBar.noFolderForeground": "#EEFEF5"
   },
   "[vue]": {
     "editor.tabSize": 2

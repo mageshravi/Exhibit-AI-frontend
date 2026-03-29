@@ -1,8 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '../stores/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('../views/LoginView.vue'),
+    },
     {
       path: '/',
       name: 'Home',
@@ -65,6 +71,18 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login']
+  const authRequired = !publicPages.includes(to.path)
+  const userStore = useUserStore()
+
+  if (authRequired && !userStore.user) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router
