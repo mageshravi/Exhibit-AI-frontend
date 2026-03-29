@@ -13,9 +13,24 @@ const emits = defineEmits<{
   (e: 'edit', exhibit: Exhibit): void
   (e: 'refresh'): void
 }>()
+
 const fileDisplay = computed(() => {
   const filename = props.filename || props.file.split('/').pop() || 'Unknown'
   return filename
+})
+
+const embeddingStatus = computed(() => {
+  if (props.embedding_status === 'pending') {
+    return 'Queued for processing'
+  } else if (props.embedding_status === 'processing') {
+    return 'Processing'
+  } else if (props.embedding_status === 'failed') {
+    return `Processing failed: ${props.embedding_error_message}`
+  } else if (props.embedding_status === 'completed') {
+    return 'Processed'
+  }
+
+  return 'Unknown status'
 })
 
 const deleteExhibitItem = () => {
@@ -38,7 +53,7 @@ const deleteExhibitItem = () => {
     <div class="c-exhibit-item__file-info">
       <span v-if="props.exhibit_code" class="c-exhibit-item__code">{{ props.exhibit_code }}</span>
       <span class="c-exhibit-item__name" :title="fileDisplay">{{ fileDisplay }}</span>
-      <small class="c-exhibit-item__status">{{ props.status }}</small>
+      <small class="c-exhibit-item__status">{{ embeddingStatus }}</small>
     </div>
     <div class="c-exhibit-item__file-actions">
       <a class="c-exhibit-item__action" :href="props.file" download></a>

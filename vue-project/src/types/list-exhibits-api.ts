@@ -2,8 +2,8 @@ interface Exhibit {
   id: number
   filename: string
   file: string
-  status: string
-  error_message: string
+  embedding_status: string
+  embedding_error_message: string
   case: string
   exhibit_code: string | null
   created_at: string

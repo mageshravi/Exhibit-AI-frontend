@@ -75,6 +75,11 @@ onMounted(() => {
         :to="{ name: 'NewChat', params: { caseUuid: $route.params.caseUuid } }"
         >Chats</router-link
       >
+      <router-link
+        class="m-tabs__tab"
+        :to="{ name: 'Timelines', params: { caseUuid: $route.params.caseUuid } }"
+        >Timelines</router-link
+      >
     </nav>
   </header>
 </template>
@@ -104,8 +109,12 @@ onMounted(() => {
 
 .m-tabs {
   &__tab {
-    &[aria-selected='true'],
     &.router-link-active {
+      border-color: var(--theme-tint);
+    }
+
+    &[aria-selected='true'],
+    &.router-link-exact-active {
       color: white;
       background-color: var(--theme-tint);
     }

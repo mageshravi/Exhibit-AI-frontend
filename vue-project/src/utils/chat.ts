@@ -32,4 +32,6 @@ function sendMessage(
     })
 }
 
+// todo: rewrite using axios. Eliminate usage of chat-types.ts in utils. Create or use types/create-chat-message-api.ts
+
 export { sendMessage }
