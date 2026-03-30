@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AddLitigant from '@/components/litigant/AddLitigant.vue'
 import InputText from '@/components/inputs/InputText.vue'
@@ -116,6 +116,10 @@ const create = () => {
       }
     })
 }
+
+onMounted(() => {
+  document.title = 'New Case | Exhibit AI'
+})
 </script>
 
 <template>
