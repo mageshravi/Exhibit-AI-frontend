@@ -12,7 +12,7 @@ import type {
 } from '@/types/list-timeline-events-api'
 import type { Timeline } from '@/types/retrieve-timeline-api'
 
-interface TimelineDetailViewProps {
+interface TimelineDetailViewState {
   case: RetrieveCaseResponse | null
   timeline: Timeline | null
   timelineEventsResponse: ListTimelineEventsResponse | null
@@ -21,7 +21,7 @@ interface TimelineDetailViewProps {
 
 const route = useRoute()
 
-const state = reactive<TimelineDetailViewProps>({
+const state = reactive<TimelineDetailViewState>({
   case: null,
   timeline: null,
   timelineEventsResponse: null,
@@ -65,6 +65,7 @@ onMounted(() => {
   const caseUuid = route.params.caseUuid as string
   getCaseDetails_v2(caseUuid).then((response) => {
     state.case = response.data
+    document.title = `Timelines - ${state.case.title} | Exhibit AI`
   })
 
   loadTimeline()
@@ -75,6 +76,7 @@ function loadTimeline(loadEvents = true) {
 
   getTimelineDetails(timelineId).then((response) => {
     state.timeline = response.data
+    document.title = `${state.timeline.name} - ${state.case?.title} | Exhibit AI`
 
     if (!loadEvents) return
 

@@ -154,6 +154,8 @@ onMounted(() => {
       })
     })
 
+    document.title = `Edit Case - ${state.caseTitle} | Exhibit AI`
+
     updateFetchedValues()
   })
 })

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Cookie from 'js-cookie'
 import axios from 'axios'
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import InputText from '@/components/inputs/InputText.vue'
 import InputPassword from '@/components/inputs/InputPassword.vue'
@@ -49,6 +49,15 @@ function handleLogin() {
       console.error('Login failed:', error)
     })
 }
+
+onMounted(() => {
+  document.title = 'Login | Exhibit AI'
+
+  // If user is already logged in, redirect to home
+  if (userStore.user) {
+    router.push({ name: 'Home' })
+  }
+})
 </script>
 
 <template>

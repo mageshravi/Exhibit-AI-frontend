@@ -43,6 +43,7 @@ onMounted(() => {
   const caseUuid = route.params.caseUuid as string
   getCaseDetails_v2(caseUuid).then((response) => {
     state.case = response.data
+    document.title = `New Timeline - ${state.case.title} | Exhibit AI`
   })
 })
 

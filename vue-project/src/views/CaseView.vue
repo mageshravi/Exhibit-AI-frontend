@@ -62,6 +62,7 @@ onMounted(() => {
 
   getCaseDetails_v2(caseUuid, false).then((response) => {
     state.case = response.data
+    document.title = `${state.case.title} | Exhibit AI`
   })
 })
 
