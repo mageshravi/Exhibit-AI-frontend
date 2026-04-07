@@ -41,7 +41,7 @@ onMounted(() => {
         v-for="chat in state.chats"
         :key="chat.id"
         :to="{
-          name: 'CaseChat',
+          name: 'ChatDetail',
           params: { caseUuid: route.params.caseUuid, threadUuid: chat.uuid },
         }"
         class="m-chats-list__link"

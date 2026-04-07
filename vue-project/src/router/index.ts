@@ -41,18 +41,24 @@ const router = createRouter({
     },
     {
       path: '/case/:caseUuid/chat',
-      name: 'Chat',
       component: () => import('../views/ChatView.vue'),
-    },
-    {
-      path: '/case/:caseUuid/chat/new',
-      name: 'NewChat',
-      component: () => import('../views/NewChatView.vue'),
-    },
-    {
-      path: '/case/:caseUuid/chat/:threadUuid',
-      name: 'CaseChat',
-      component: () => import('../views/ChatView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'Chats',
+          component: () => import('../views/NewChatView.vue'),
+        },
+        {
+          path: 'new',
+          name: 'NewChat',
+          component: () => import('../views/NewChatView.vue'),
+        },
+        {
+          path: ':threadUuid',
+          name: 'ChatDetail',
+          component: () => import('../views/ChatDetailView.vue'),
+        },
+      ],
     },
     {
       path: '/case/:caseUuid/timelines',

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import CaseHeader from '@/components/CaseHeader.vue'
-import ChatSidebar from '@/components/chat/ChatSidebar.vue'
 import Cookies from 'js-cookie'
 import { useRoute } from 'vue-router'
 import { onMounted, reactive } from 'vue'
@@ -75,7 +73,7 @@ function createNewChat() {
         state.message = ''
 
         router.push({
-          name: 'CaseChat',
+          name: 'ChatDetail',
           params: { caseUuid: route.params.caseUuid, threadUuid: state.threadUuid },
         })
       })
@@ -89,30 +87,26 @@ function createNewChat() {
 </script>
 
 <template>
-  <div class="v-new-chat-page">
-    <CaseHeader class="v-new-chat-page__header" :title="state.case?.title || 'Loading...'" />
-    <ChatSidebar class="v-new-chat-page__sidebar" />
-    <main class="v-new-chat-page__main">
-      <h2 class="v-new-chat-page__title">What would you like to know?</h2>
-      <img
-        class="v-new-chat-page__preloader"
-        :class="{ 'is-visible': state.sendingMessage }"
-        src="/preloader-1481.gif"
-        alt="loading..."
-        width="48"
-        height="48"
-      />
-      <textarea
-        class="v-new-chat-page__new-message"
-        placeholder="Ask anything"
-        autofocus
-        v-model="state.message"
-        @keyup.ctrl.enter.exact.prevent="createNewChat()"
-        :disabled="state.sendingMessage"
-      ></textarea>
-      <em>Use Ctrl + Enter to send message.</em>
-    </main>
-  </div>
+  <main class="v-new-chat-page__main">
+    <h2 class="v-new-chat-page__title">What would you like to know?</h2>
+    <img
+      class="v-new-chat-page__preloader"
+      :class="{ 'is-visible': state.sendingMessage }"
+      src="/preloader-1481.gif"
+      alt="loading..."
+      width="48"
+      height="48"
+    />
+    <textarea
+      class="v-new-chat-page__new-message"
+      placeholder="Ask anything"
+      autofocus
+      v-model="state.message"
+      @keyup.ctrl.enter.exact.prevent="createNewChat()"
+      :disabled="state.sendingMessage"
+    ></textarea>
+    <em>Use Ctrl + Enter to send message.</em>
+  </main>
 </template>
 
 <style lang="scss">

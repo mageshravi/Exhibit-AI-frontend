@@ -72,7 +72,7 @@ onMounted(() => {
       >
       <router-link
         class="m-tabs__tab"
-        :to="{ name: 'NewChat', params: { caseUuid: $route.params.caseUuid } }"
+        :to="{ name: 'Chats', params: { caseUuid: $route.params.caseUuid } }"
         >Chats</router-link
       >
       <router-link

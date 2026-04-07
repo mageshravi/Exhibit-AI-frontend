@@ -2,7 +2,6 @@
 import { computed, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import ChatSidebar from '@/components/chat/ChatSidebar.vue'
-import ChatThread from '@/components/chat/ChatThread.vue'
 import CaseHeader from '@/components/CaseHeader.vue'
 import { getCaseDetails_v2 } from '@/utils/case'
 import type { RetrieveCaseResponse } from '@/types/retrieve-case-api'
@@ -36,7 +35,7 @@ onMounted(() => {
   <div class="v-chat-page">
     <CaseHeader class="v-chat-page__header" :title="caseTitle" />
     <ChatSidebar class="v-chat-page__sidebar" />
-    <ChatThread class="v-chat-page__thread" />
+    <RouterView class="v-chat-page__view" />
   </div>
 </template>
 
@@ -62,7 +61,7 @@ onMounted(() => {
     align-items: flex-end;
   }
 
-  &__thread {
+  &__view {
     grid-column: 3 / span 4;
     grid-row: 2;
   }
